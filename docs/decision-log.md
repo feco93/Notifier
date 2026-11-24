@@ -322,3 +322,13 @@ Items resting on model memory are marked **to verify** in ADR 0001.
   - regex-escaped, so "C++" and "U.S." work literally
 - **Trade-off accepted:** no inflection matching ("war" ≠ "wars"). Users
   add a second alert for other forms.
+
+### D-027 · 2026-11-25 · Self-review is part of every slice (owner, prompt 047)
+- **Context:** after slices 1–4 the owner had to ask for a review each time,
+  and every review found real defects:
+  - broken logout
+  - unsafe URL schemes and unvalidated config
+  - missing UTC guard
+  - test-send gaps
+- **Rule:** the review is the last step of each slice, done unprompted
+  before the slice is reported as finished (process in `plan.md`).

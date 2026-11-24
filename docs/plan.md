@@ -112,3 +112,12 @@ get documented as future work, not built.
   confirming they fail.
 - Standard checks: hallucinated APIs/fields, timezones, dedup, swallowed
   exceptions, hardcoded values, secrets in logs, scope creep.
+- **Every slice ends with a self-review** (owner, D-027), before it is
+  reported as finished:
+  1. re-read every changed file as if someone else wrote it
+  2. list findings with risk
+  3. turn testable suspicions into tests, run them *before* fixing
+  4. fix
+  5. re-run the suite, mutation checks and hygiene scans (comment
+     convention, username, unwanted files)
+  6. log it

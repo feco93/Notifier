@@ -3,8 +3,8 @@
 Home assignment: take a deliberately vague product brief to a working
 implementation using AI agents, with the process documented.
 
-**Status:** Phase 4 (build), slices 1–2 of 7 done: solution, data model,
-login; BBC source assembly.
+**Status:** Phase 4 (build), slices 1–4 of 7 done: solution, data model,
+login; BBC source; matcher; email and Slack channels with test send.
 Source: BBC News RSS, personal prototype (see
 [notes/bbc-terms-review.md](notes/bbc-terms-review.md)).
 
@@ -13,11 +13,13 @@ Source: BBC News RSS, personal prototype (see
 Requires the .NET SDK (10 or later; the app targets `net10.0` LTS).
 
 ```powershell
-dotnet run --project src/Notifier.Web
+./run.ps1
 ```
 
-Then open the URL it prints and log in. `run.ps1`, which also starts the
-smtp4dev mail catcher, arrives with slice 4 (design §9a).
+This restores the pinned smtp4dev mail catcher, starts it, and runs the app.
+- Open the app at the URL it prints.
+- Caught emails appear at http://localhost:5080.
+- Without the mail catcher: `dotnet run --project src/Notifier.Web`.
 
 **Dev-only accounts** (hard-coded per A-01; hashes in
 `src/Notifier.Web/appsettings.Development.json`, never use in production):
@@ -39,6 +41,9 @@ dotnet run --project src/Notifier.Web -- hash-password
 ```powershell
 dotnet test --solution Notifier.slnx
 ```
+
+The email end-to-end test is skipped unless a local smtp4dev is running and
+`NOTIFIER_E2E_SMTP4DEV=http://localhost:5080` is set.
 
 **Database:** SQLite at `src/Notifier.Web/notifier.db`, created on first
 start with `EnsureCreated()`. That call **never updates an existing schema**,

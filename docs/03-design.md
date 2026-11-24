@@ -115,7 +115,7 @@ src/Notifier.Web/                  (refs: Core, Sources.Bbc, EF Core SQLite, Mai
   Pages/         Login, Logout, Alerts/{Index,Create}, Admin/{Index,Alerts,Deliveries,Synthetic}
   Data/          NotifierDbContext (SQLite)
   Polling/       PollingWorker, PollService, PollTrigger
-  Delivery/      Dispatcher, ChannelRegistry
+  Sending/       Dispatcher, TestSendService   (named Sending: a Delivery namespace would shadow the entity)
   Channels/      EmailChannel (MailKit), SlackChannel (HttpClient)
   Auth/          ConfigUserStore, login handler
 tests/Notifier.Tests/
@@ -383,6 +383,22 @@ public sealed record Notification(
 
 Neither channel sends images or BBC logos [NFR-07].
 
+**Slack facts verified from Slack's docs (slice 4):**
+- **Escaping:** only `&`, `<` and `>` need escaping, as HTML entities.
+- **Length:** keep `text` ≤ 4,000 characters (it may be split above that;
+  truncated at 40,000). The batch format therefore fills items until a
+  4,000-character budget is reached and moves the rest into "…and N more".
+  The Slack batch also omits summaries.
+- **Errors:** webhook error status codes are only documented in a 2016
+  changelog. The channel treats **any** non-2xx response as a failure and
+  records the body text.
+- **Unfurling:** the payload sets `unfurl_links`/`unfurl_media` to false, so
+  Slack doesn't pull BBC preview images.
+- **Still unverified:** that incoming webhooks honour the `unfurl_*` fields
+  (documented for `chat.postMessage`), and that Slack decodes `&amp;`
+  inside link URLs. No real Slack workspace has been tested; it needs a
+  webhook URL from the owner.
+
 ## 8. UI pages and access [US-01…04, AS-01…07]
 
 | Page | Access | Stories | Pri |
@@ -432,7 +448,8 @@ Neither channel sends images or BBC logos [NFR-07].
 *Added after a manual NFR read-through (V-027): v1 of this design needed two
 manual steps, and never said how smtp4dev gets installed.*
 
-- **`.config/dotnet-tools.json`** (local tool manifest) pins
+- **`dotnet-tools.json`** at the repo root (local tool manifest; the .NET 11
+  SDK's default location, not `.config/`) pins
   `rnwood.smtp4dev` **3.15.0**. `dotnet tool restore` installs it per repo,
   not globally. This is the same version verified in the spike.
 - **`run.ps1`** is the one documented command. It:

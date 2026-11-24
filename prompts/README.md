@@ -54,3 +54,7 @@ Full session transcripts are exported to `prompts/transcripts/` at milestones.
 | 042 | [042-whole-word-keywords.md](042-whole-word-keywords.md) | Keywords as whole word/phrase; surviving mutant exposed a missing test |
 | 043 | [043-review-slice3.md](043-review-slice3.md) | Review slice 3: UTC guard; own hypothesis refuted by test; 17/17 mutants |
 | 044 | [044-commit-slice3.md](044-commit-slice3.md) | Commit slice 3 |
+| 045 | [045-amend-message.md](045-amend-message.md) | Amend slice 3 message: test count 47 → 46 |
+| 046 | [046-start-slice4.md](046-start-slice4.md) | Slice 4: email + Slack channels, test send, run.ps1; E2E email; 18/18 mutants |
+| 047 | [047-always-review.md](047-always-review.md) | Standing rule: self-review every slice; slice 4 review fixes |
+| 048 | [048-commit-slice4.md](048-commit-slice4.md) | Commit slice 4 |

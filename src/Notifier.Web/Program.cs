@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Notifier.Sources.Bbc;
 using Notifier.Web.Auth;
+using Notifier.Web.Channels;
 using Notifier.Web.Data;
+using Notifier.Web.Sending;
 
 // `hash-password`: reads a password from stdin and prints its hash for appsettings.
 if (args.Length > 0 && args[0] == "hash-password")
@@ -19,6 +21,8 @@ builder.Services.Configure<UsersOptions>(builder.Configuration.GetSection(UsersO
 builder.Services.AddSingleton<ConfigUserStore>();
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddBbcNewsSource(builder.Configuration);
+builder.Services.AddNotifierChannels(builder.Configuration);
+builder.Services.AddScoped<TestSendService>();
 
 var dbPath = Path.Combine(builder.Environment.ContentRootPath,
     builder.Configuration["Notifier:DatabasePath"] ?? "notifier.db");
