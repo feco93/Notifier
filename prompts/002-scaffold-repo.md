@@ -4,7 +4,9 @@
 
 ## Prompt (verbatim)
 
-> You can use the C:\Users\sipos\Sources\Notifier folder to get started.
+*Local username masked as `<user>` at the owner's request (prompt 035).*
+
+> You can use the C:\Users\<user>\Sources\Notifier folder to get started.
 
 ## Outcome
 

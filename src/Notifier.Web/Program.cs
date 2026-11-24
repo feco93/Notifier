@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using Notifier.Sources.Bbc;
 using Notifier.Web.Auth;
 using Notifier.Web.Data;
 
@@ -17,6 +18,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<UsersOptions>(builder.Configuration.GetSection(UsersOptions.Section));
 builder.Services.AddSingleton<ConfigUserStore>();
 builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddBbcNewsSource(builder.Configuration);
 
 var dbPath = Path.Combine(builder.Environment.ContentRootPath,
     builder.Configuration["Notifier:DatabasePath"] ?? "notifier.db");

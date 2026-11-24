@@ -43,3 +43,10 @@ Full session transcripts are exported to `prompts/transcripts/` at milestones.
 | 031 | [031-review-slice1.md](031-review-slice1.md) | Code review: logout bug found by a new failing test; DB path fix |
 | 032 | [032-no-chatty-comments.md](032-no-chatty-comments.md) | Comment convention: short whys only, no process IDs in code |
 | 033 | [033-commit-slice1.md](033-commit-slice1.md) | Commit slice 1; SQLite side files slipped in, fixed |
+| 034 | [034-start-slice2.md](034-start-slice2.md) | Slice 2: BBC source assembly; live check; 46 tests |
+| 035 | [035-mask-username.md](035-mask-username.md) | Mask local username in verbatim prompts |
+| 036 | [036-keep-history.md](036-keep-history.md) | Owner keeps git history unchanged |
+| 037 | [037-review-slice2.md](037-review-slice2.md) | Review slice 2: unsafe URL schemes and unvalidated config fixed test-first |
+| 038 | [038-why-duplicates.md](038-why-duplicates.md) | Owner challenge: suffix is a section index, not a repeat counter |
+| 039 | [039-lead-section-only.md](039-lead-section-only.md) | Headline ranks only the lead section (D-025) |
+| 040 | [040-commit-slice2.md](040-commit-slice2.md) | Commit slice 2 |

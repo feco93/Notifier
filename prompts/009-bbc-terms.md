@@ -4,7 +4,9 @@
 
 ## Prompt (verbatim)
 
-> @"C:\Users\sipos\Downloads\BBC Global Terms of Use.txt"
+*Local username masked as `<user>` at the owner's request (prompt 035).*
+
+> @"C:\Users\<user>\Downloads\BBC Global Terms of Use.txt"
 > Here is the terms of use.
 
 The attached file is the BBC Global Terms of Use (updated 15 April 2026). It

@@ -31,7 +31,8 @@ Observed in real data (phase 1):
 ## Decision
 
 - Each alert picks a **tier**:
-  - **Headline:** rank ≤ N (default 5)
+  - **Headline:** rank ≤ N (default 5), ranked **within the lead section of
+    Top stories only** (D-025: the feed concatenates page modules; V-048)
   - **Front page:** any rank
   - **All:** no prominence condition
 - It also picks **topics** and an optional **keyword**.

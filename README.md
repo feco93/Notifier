@@ -3,7 +3,8 @@
 Home assignment: take a deliberately vague product brief to a working
 implementation using AI agents, with the process documented.
 
-**Status:** Phase 4 (build), slice 1 of 7 done: solution, data model, login.
+**Status:** Phase 4 (build), slices 1–2 of 7 done: solution, data model,
+login; BBC source assembly.
 Source: BBC News RSS, personal prototype (see
 [notes/bbc-terms-review.md](notes/bbc-terms-review.md)).
 

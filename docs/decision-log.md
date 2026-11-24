@@ -291,3 +291,22 @@ Items resting on model memory are marked **to verify** in ADR 0001.
   cleanly on its own.
 - **Applied:** all slice 1 files trimmed. A grep for process references in
   `src/` and `tests/` finds none.
+
+### D-025 · 2026-11-24 · Headline ranks only the lead section of Top stories (owner, prompt 039)
+- **Context:** the owner challenged the duplicate explanation (prompt 038).
+  The data showed that each BBC feed concatenates page modules, with the
+  GUID `#n` marking the module (V-048). Raw position is only a ranking within
+  the lead module.
+- **Options:**
+  - **Lead section only:** the source reports `Section` + `Position` within
+    the section; only section 0 gets a rank
+  - **Keep raw position:** document the risk
+- **Choice:** lead section only.
+- **Consequences:**
+  - `SourceItem` gains `Section`, and `Position` becomes per-section.
+  - `Article` gains `OnTopStories` (Front page = any section), and
+    `TopStoriesRank` = lead-section rank only.
+  - A section starts whenever the marker changes. Items without a marker stay
+    in the current section, so a feed with no markers degrades to a single
+    section (today's behaviour).
+  - Schema change: delete the local `notifier.db` (`EnsureCreated`).

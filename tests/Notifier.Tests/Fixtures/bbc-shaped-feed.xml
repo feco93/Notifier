@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic test data in the shape of a BBC News RSS feed. All content is invented.
+     Sections: guid #0 = lead (6 items), #1 (3 items, one without a marker), #2 (1 item). -->
+<rss xmlns:media="http://search.yahoo.com/mrss/" version="2.0">
+  <channel>
+    <title>Synthetic News</title>
+    <link>https://www.bbc.co.uk/news</link>
+    <description>Invented items for parser tests</description>
+    <ttl>15</ttl>
+    <item>
+      <title>Video item ranked first but published earliest</title>
+      <description>A video item.</description>
+      <link>https://www.bbc.co.uk/news/videos/vid111?at_medium=RSS&amp;at_campaign=rss</link>
+      <guid isPermaLink="false">https://www.bbc.co.uk/news/videos/vid111#0</guid>
+      <pubDate>Tue, 24 Nov 2026 01:21:41 GMT</pubDate>
+      <media:thumbnail width="240" height="135" url="https://example.test/thumb.jpg"/>
+    </item>
+    <item>
+      <title>Article item</title>
+      <description>An article item.</description>
+      <link>https://www.bbc.co.uk/news/articles/art222?at_medium=RSS&amp;at_campaign=rss</link>
+      <guid isPermaLink="false">https://www.bbc.co.uk/news/articles/art222#0</guid>
+      <pubDate>Tue, 24 Nov 2026 10:04:13 GMT</pubDate>
+    </item>
+    <item>
+      <title>Weather item</title>
+      <description>A weather item.</description>
+      <link>https://www.bbc.co.uk/weather/articles/wea333?at_medium=RSS&amp;at_campaign=rss</link>
+      <guid isPermaLink="false">https://www.bbc.co.uk/weather/articles/wea333#0</guid>
+      <pubDate>Tue, 24 Nov 2026 11:40:46 GMT</pubDate>
+    </item>
+    <item>
+      <title>Numeric offset date</title>
+      <description>Published at 11:38:52 +0100.</description>
+      <link>https://www.bbc.co.uk/news/articles/art444</link>
+      <guid isPermaLink="false">https://www.bbc.co.uk/news/articles/art444#0</guid>
+      <pubDate>Tue, 24 Nov 2026 11:38:52 +0100</pubDate>
+    </item>
+    <item>
+      <title>Missing date</title>
+      <description>No pubDate element.</description>
+      <link>https://www.bbc.co.uk/news/articles/art555</link>
+      <guid isPermaLink="false">https://www.bbc.co.uk/news/articles/art555#0</guid>
+    </item>
+    <item>
+      <title>Garbage date</title>
+      <description>Unparseable pubDate.</description>
+      <link>https://www.bbc.co.uk/news/articles/art666</link>
+      <guid isPermaLink="false">https://www.bbc.co.uk/news/articles/art666#0</guid>
+      <pubDate>yesterday-ish</pubDate>
+    </item>
+    <item>
+      <title>Guid only</title>
+      <description>No link element.</description>
+      <guid isPermaLink="false">https://www.bbc.co.uk/news/articles/art777#1</guid>
+      <pubDate>Tue, 24 Nov 2026 09:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Article item (listed again)</title>
+      <description>Duplicate of art222 with a different suffix.</description>
+      <link>https://www.bbc.co.uk/news/articles/art222?at_medium=RSS&amp;at_campaign=rss</link>
+      <guid isPermaLink="false">https://www.bbc.co.uk/news/articles/art222#1</guid>
+      <pubDate>Tue, 24 Nov 2026 10:04:13 GMT</pubDate>
+    </item>
+    <item>
+      <title>Unidentifiable</title>
+      <description>Neither a link nor a URL guid.</description>
+      <guid isPermaLink="false">not-a-url</guid>
+      <pubDate>Tue, 24 Nov 2026 09:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>  Multi-line
+        title   with   spaces  </title>
+      <description></description>
+      <link>https://www.bbc.co.uk/news/articles/art999</link>
+      <guid isPermaLink="false">https://www.bbc.co.uk/news/articles/art999#2</guid>
+      <pubDate>Tue, 24 Nov 2026 08:00:00 GMT</pubDate>
+    </item>
+  </channel>
+</rss>

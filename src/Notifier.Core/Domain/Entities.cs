@@ -11,7 +11,8 @@ public sealed class Article
     /// <summary>Set on insert only.</summary>
     public DateTime FirstSeenAtUtc { get; set; }
     public DateTime LastSeenAtUtc { get; set; }
-    /// <summary>1-based; null when not in Top stories.</summary>
+    public bool OnTopStories { get; set; }
+    /// <summary>1-based rank within the lead section of Top stories; null outside it.</summary>
     public int? TopStoriesRank { get; set; }
     public bool IsSynthetic { get; set; }
     public List<ArticleTopic> Topics { get; set; } = [];

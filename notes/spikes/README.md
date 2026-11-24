@@ -47,7 +47,55 @@ docs.
    was **invalid**, because it inspected the wrong data. Redone against
    `/raw`, the full source, before accepting the result.
 
-## 3. Test libraries (NuGet metadata, read live)
+## 3. Live check of the BBC source assembly: `bbc-live-smoke/`
+
+**Run:** `dotnet run` (slice 2, prompt 034). It makes one request per feed
+and prints only counts and shapes, never article content.
+
+| Feed | Items kept | Highest raw position | Unknown dates |
+|---|---|---|---|
+| TopStories | 25 | 24 | 0 |
+| World | 31 | 30 | 0 |
+| Business | 57 | 58 | 0 |
+| ScienceEnvironment | 34 | 41 | 0 |
+| Technology | 21 | 20 | 0 |
+
+Re-run after section support (D-025, prompt 039):
+
+| Feed | Items kept | Sections | Lead section size |
+|---|---|---|---|
+| TopStories | 26 | 5 | 11 |
+| World | 31 | 4 | 7 |
+| Business | 57 | 6 | 7 |
+| ScienceEnvironment | 34 | 6 | 13 |
+| Technology | 21 | 3 | 13 |
+
+Kept < raw in Business and Science was investigated on the local captures:
+- Every dropped item was a **true in-feed duplicate**: same path and title,
+  listed up to 3 times in one feed.
+
+**Corrected after the owner challenged it (prompt 038, V-048).** The first
+version said the GUID suffixes "number these repeats" and that the first
+occurrence is "the best rank". Both were unverified. The data shows:
+
+- **The suffix marks a feed section, not a repeat count.** In all 5 feeds it
+  never decreases along the feed and forms contiguous blocks (Top stories:
+  `#1×11, #2×7, #4×7, #5×1, #8×7`). Each feed is therefore a concatenation
+  of page modules. An article repeats when it is promoted in several modules,
+  and each copy sits in a different block.
+- **Order inside blocks:**
+  - The Top stories lead block is non-chronological (4/10 newest-first
+    pairs), so editorial ranking holds there (V-010 re-confirmed at block
+    level).
+  - The Science and Technology lead blocks are strictly newest-first (12/12).
+- **De-duplication keeps the first occurrence.** That is still right, but the
+  reason is that it sits in the most prominent module.
+- **Open issue:** raw position is only a ranking *inside the lead block*.
+  "Headline = top 5" is safe only while the lead block has ≥ 5 items
+  (11 in this snapshot).
+- This is an inference from captured data, not BBC documentation.
+
+## 4. Test libraries (NuGet metadata, read live)
 
 | Package | Latest stable | Licence |
 |---|---|---|

@@ -136,7 +136,7 @@ erDiagram
 
 | Entity | Fields | Constraints / notes |
 |---|---|---|
-| **Article** | `Key` (PK, string), `Title`, `Summary`, `Url`, `PublishedAtUtc?`, `FirstSeenAtUtc`, `LastSeenAtUtc`, `TopStoriesRank?`, `IsSynthetic` | `Key` = last URL path segment, no query/fragment [A-02′]. `PublishedAtUtc` null when missing or unparseable (spike) |
+| **Article** | `Key` (PK, string), `Title`, `Summary`, `Url`, `PublishedAtUtc?`, `FirstSeenAtUtc`, `LastSeenAtUtc`, `OnTopStories`, `TopStoriesRank?`, `IsSynthetic` | `Key` = last URL path segment, no query/fragment [A-02′]. `PublishedAtUtc` null when missing or unparseable (spike) |
 | **ArticleTopic** | `ArticleKey`, `Topic`, `LastSeenAtUtc` | PK (ArticleKey, Topic). An article can be in several feeds (29/144 observed) |
 | **Alert** | `Id`, `OwnerUsername`, `Name`, `Tier`, `Keyword?`, `Enabled`, `CreatedAtUtc`, `DeletedAtUtc?` | Every query filtered by owner [US-03]. **Soft delete:** deleting sets `DeletedAtUtc`. The alert disappears from the user's list and never matches, but its `Delivery` rows stay for the admin log (US-03; Q3 gap found in V-029) |
 | **AlertTopic** | `AlertId`, `Topic` | ≥ 1 when Tier = All; none for Headline/FrontPage [US-02, Q1] |
@@ -172,7 +172,7 @@ An article matches an alert when **all** of these hold:
 | 2 | `article.FirstSeenAtUtc > alert.CreatedAtUtc` | A-04′ (no backfill) |
 | 3 | `article.PublishedAtUtc` is known **and** `now − PublishedAtUtc ≤ FreshnessWindow` (24h) | A-04′, spike: unknown date ⇒ not eligible |
 | 4 | **Tier = All:** the article appears in at least one of the alert's topics | A-09, Q1 |
-| 5 | **Tier = FrontPage:** `TopStoriesRank` not null. **Tier = Headline:** `TopStoriesRank ≤ HeadlineN` (5). Topics are **not used** for these tiers | A-03′, Q1 |
+| 5 | **Tier = FrontPage:** `OnTopStories` (any section). **Tier = Headline:** `TopStoriesRank ≤ HeadlineN` (5), where the rank exists only for the **lead section** (D-025). Topics are **not used** for these tiers | A-03′, Q1, D-025 |
 | 6 | **Keyword** (optional): `Title` or `Summary` contains it, `OrdinalIgnoreCase` | A-09 |
 
 **The tier decides; topics apply only to the All tier** (owner-accepted Q1,
@@ -205,7 +205,8 @@ public sealed record SourceItem(
     string Key,                 // source-defined stable identity (BBC: last URL path segment)
     string Title, string Summary, Uri Url,
     DateTime? PublishedAtUtc,   // null = missing or unparseable → never eligible
-    int Position);              // 0-based order in the feed; ranks come from TopStories positions
+    int Section,                // 0-based feed section; 0 = lead section (D-025)
+    int Position);              // 0-based order within the section
 public sealed record SourceFetchResult(Topic Topic, IReadOnlyList<SourceItem> Items);
 ```
 
@@ -239,7 +240,7 @@ sequenceDiagram
       P->>DB: FeedStatus error (other feeds continue, A-14)
     end
   end
-  P->>DB: if Top stories succeeded: set ranks 1..n, clear rank for absent articles
+  P->>DB: if Top stories succeeded: OnTopStories for every item; rank = Position+1 for lead-section items only; clear both for absent articles
   P->>D: candidates = articles seen this cycle
   D->>DB: Pending deliveries (unique index skips duplicates)
   D->>D: send via channel, 1 retry on failure
@@ -260,6 +261,12 @@ sequenceDiagram
 2. **Ranks change only after a successful Top stories fetch.** A failed
    fetch must not wipe every rank, and must not cause false
    "dropped off the front page" changes.
+   - **Only the lead section is ranked** (D-025). A BBC feed concatenates page
+     modules, and the GUID `#n` marks the module (V-048). Position is only a
+     ranking *inside* the lead module.
+   - Items in later sections are `OnTopStories` (Front page tier) but have no
+     rank, so a short lead section can't let a lower module's items into the
+     Headline tier.
 3. **FirstSeen is set on insert only.** Updates refresh title/summary/rank
    and `LastSeenAtUtc`.
 4. **Upward rank moves re-trigger matching** [A-04′]. Candidates are
