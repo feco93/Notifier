@@ -42,3 +42,4 @@ Full session transcripts are exported to `prompts/transcripts/` at milestones.
 | 030 | [030-start-slice1.md](030-start-slice1.md) | Slice 1: skeleton, data model, login; 14 tests |
 | 031 | [031-review-slice1.md](031-review-slice1.md) | Code review: logout bug found by a new failing test; DB path fix |
 | 032 | [032-no-chatty-comments.md](032-no-chatty-comments.md) | Comment convention: short whys only, no process IDs in code |
+| 033 | [033-commit-slice1.md](033-commit-slice1.md) | Commit slice 1; SQLite side files slipped in, fixed |
