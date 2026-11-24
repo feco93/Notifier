@@ -161,8 +161,11 @@ prototype with a disposable DB; documented as a production gap.
 
 ## 4. Importance and matching [US-05, ADR 0002]
 
-`Matcher.Evaluate(alert, article, articleTopics, now, settings) → MatchResult(IsMatch, Reason)`
-is a pure function, so it is table-testable.
+`Matcher.Evaluate(alert, article, nowUtc, settings) → MatchResult(IsMatch, Reason, Rejection)`
+is a pure function in Core, so it is table-testable.
+- Topics come from `article.Topics`.
+- `Rejection` names the first failing condition, so tests (and later the
+  admin view) can tell *why* an article didn't match.
 
 An article matches an alert when **all** of these hold:
 
@@ -173,7 +176,7 @@ An article matches an alert when **all** of these hold:
 | 3 | `article.PublishedAtUtc` is known **and** `now − PublishedAtUtc ≤ FreshnessWindow` (24h) | A-04′, spike: unknown date ⇒ not eligible |
 | 4 | **Tier = All:** the article appears in at least one of the alert's topics | A-09, Q1 |
 | 5 | **Tier = FrontPage:** `OnTopStories` (any section). **Tier = Headline:** `TopStoriesRank ≤ HeadlineN` (5), where the rank exists only for the **lead section** (D-025). Topics are **not used** for these tiers | A-03′, Q1, D-025 |
-| 6 | **Keyword** (optional): `Title` or `Summary` contains it, `OrdinalIgnoreCase` | A-09 |
+| 6 | **Keyword** (optional): appears in `Title` or `Summary` as a **whole word or phrase**: case-insensitive, word boundaries on both ends, any whitespace between phrase words. *Was substring; changed after measuring noise on real feeds (D-026).* | A-09, D-026 |
 
 **The tier decides; topics apply only to the All tier** (owner-accepted Q1,
 ADR 0002).
@@ -186,11 +189,13 @@ ADR 0002).
   our four section feeds. Intersection would have silently missed most
   headlines (V-029).
 
-**Reason text** goes into every notification [US-05]:
-- "#2 on BBC Top stories"
-- "On the BBC front page"
-- "New in Technology"
-- Plus "· keyword: 'nvidia'" when a keyword matched.
+**Reason text** goes into every notification [US-05]. It is source-neutral,
+because Core must not know about the BBC (D-020); the source's attribution
+("Source: BBC News") is added separately:
+- "#2 in Top stories" (Headline, or Front page within the lead section)
+- "In Top stories" (Front page, later section)
+- "New in Technology" (All: the first shared topic in topic order)
+- Plus " · keyword: 'nvidia'" when a keyword matched.
 
 ## 4a. Source contract [NFR-03]
 
@@ -396,6 +401,10 @@ Neither channel sends images or BBC logos [NFR-07].
   - `AuthorizeFolder("/Admin", "AdminOnly")`
 - Non-admins hitting `/Admin` get **403** [US-01].
 - **Antiforgery** tokens are on for all POSTs (framework default).
+- **Keyword validation on create** (code review, V-053): trimmed, ≤ 100
+  characters, and it must contain at least one letter or digit. A
+  punctuation-only keyword would only match standalone punctuation, which is
+  meaningless.
 - **No "edit alert"** in v1: requirements only ask for create, list,
   enable/disable and delete. Edit = delete + create.
 

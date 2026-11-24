@@ -235,7 +235,8 @@ decision log.
   - **topics:** any of the selected topics (OR within topics). *Since Q1
     (prompt 027): topics apply to the All tier only.*
   - **tier:** Headline / Front page / All (A-03′)
-  - **keyword:** optional; contained in title or summary, case-insensitive
+  - **keyword:** optional; contained in title or summary, case-insensitive.
+    *Since D-026: as a whole word or phrase.*
 
   No other OR or nesting. Users who need it create two alerts.
   - ~~severity ≥ N~~ and ~~region bounding box~~ were removed: BBC articles

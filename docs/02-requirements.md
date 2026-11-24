@@ -76,8 +76,9 @@ Phase 2 · 2026-11-24 · Timebox 0.5h
 > As a user I get a message when an article matches my alert.
 - **Matching:**
   - Fires when an enabled alert's topic and tier match (tier semantics in §2).
-  - With a keyword, the keyword must also appear in the title or summary
-    (case-insensitive).
+  - With a keyword, it must also appear in the title or summary as a
+    **whole word or phrase**, case-insensitive (D-026): "AI" matches "AI-powered"
+    but not "again".
 - **Eligibility:**
   - The article was first seen after the alert was created.
   - Its `published_at` is within the **freshness window** (default 24h).

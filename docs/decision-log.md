@@ -310,3 +310,15 @@ Items resting on model memory are marked **to verify** in ADR 0001.
     in the current section, so a feed with no markers degrades to a single
     section (today's behaviour).
   - Schema change: delete the local `notifier.db` (`EnsureCreated`).
+
+### D-026 · 2026-11-25 · Keywords match whole words or phrases (owner, prompt 042)
+- **Context:** the spec said "contained in" (substring). Measured on the
+  captured feeds, "AI" hit 60 items as a substring vs 14 as a word, and
+  "art" hit 13 vs 0 (V-051).
+- **Choice:** whole word or phrase.
+  - case-insensitive
+  - a word boundary on both ends
+  - any whitespace between phrase words
+  - regex-escaped, so "C++" and "U.S." work literally
+- **Trade-off accepted:** no inflection matching ("war" ≠ "wars"). Users
+  add a second alert for other forms.

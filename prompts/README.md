@@ -50,3 +50,7 @@ Full session transcripts are exported to `prompts/transcripts/` at milestones.
 | 038 | [038-why-duplicates.md](038-why-duplicates.md) | Owner challenge: suffix is a section index, not a repeat counter |
 | 039 | [039-lead-section-only.md](039-lead-section-only.md) | Headline ranks only the lead section (D-025) |
 | 040 | [040-commit-slice2.md](040-commit-slice2.md) | Commit slice 2 |
+| 041 | [041-start-slice3.md](041-start-slice3.md) | Slice 3: matcher test-first; 11/11 mutants killed; keyword noise found |
+| 042 | [042-whole-word-keywords.md](042-whole-word-keywords.md) | Keywords as whole word/phrase; surviving mutant exposed a missing test |
+| 043 | [043-review-slice3.md](043-review-slice3.md) | Review slice 3: UTC guard; own hypothesis refuted by test; 17/17 mutants |
+| 044 | [044-commit-slice3.md](044-commit-slice3.md) | Commit slice 3 |
