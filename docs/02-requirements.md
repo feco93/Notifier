@@ -24,7 +24,7 @@ Phase 2 · 2026-11-24 · Timebox 0.5h
 | **Topic** | A BBC section feed: Top stories, World, Business, Science & Environment, Technology |
 | **Article** | A normalized BBC item, identified by its URL article ID (A-02′) |
 | **Tier** | Importance level of an alert (A-03′): **Headline** = article in top N (default 5) of Top stories; **Front page** = article anywhere in Top stories; **All** = any new article in the alert's topics |
-| **Alert** | A user's saved subscription: topics + tier + optional keyword + ≥1 destination + enabled flag |
+| **Alert** | A user's saved subscription: tier + topics (All tier only) + optional keyword + ≥1 destination + enabled flag |
 | **Destination** | Channel type + its config: an email address, or a Slack incoming-webhook URL |
 | **Delivery** | One attempt to send one article to one destination for one alert, with status |
 
@@ -43,7 +43,8 @@ Phase 2 · 2026-11-24 · Timebox 0.5h
 > As a user I create an alert so that I'm notified about stories I care about.
 - Fields:
   - name (required)
-  - topics (≥ 1 of the 5)
+  - topics (≥ 1 of the 5, **required for tier All only**; not used for
+    Headline/Front page; design Q1)
   - tier (Headline / Front page / All)
   - keyword (optional)
   - destinations (≥ 1)
@@ -60,7 +61,8 @@ Phase 2 · 2026-11-24 · Timebox 0.5h
   **masked**) and the enabled state.
 - A disabled alert never fires. Re-enabling doesn't backfill articles missed
   while it was disabled.
-- Delete asks for confirmation and removes the alert's future deliveries.
+- Delete asks for confirmation and removes the alert's future deliveries
+  (implemented as soft delete, design Q3).
   Past delivery log rows are kept for the admin.
 - A user can't see or modify another user's alerts (direct URL → 404).
 
@@ -83,6 +85,9 @@ Phase 2 · 2026-11-24 · Timebox 0.5h
   into the top 5) fires on the poll where it qualifies.
 - **At most once** per (article, alert, destination), across polls and
   restarts.
+- **Batching** (D-023): when one poll cycle produces several matches for
+  the same alert and destination, they arrive as **one message** listing
+  every story (max 20, then "…and N more").
 - **Content:**
   - BBC title, RSS summary, link to the article
   - **"Source: BBC News"** attribution
@@ -146,7 +151,7 @@ Phase 2 · 2026-11-24 · Timebox 0.5h
 | NFR-05 | **Time:** all timestamps stored in UTC; feed `pubDate` parsed with its timezone | Must | M-lessons |
 | NFR-06 | **Secrets:** webhook URLs and SMTP credentials never logged or shown unmasked; no secrets in the repo; config via environment | Must | A-18 |
 | NFR-07 | **Compliance:** forward only title + summary + link with attribution; no images or logos; honest User-Agent; no raw BBC data in the repo | Must | D-013 |
-| NFR-08 | **Retention:** articles older than freshness window + 7 days are purged | Could | D-013 |
+| NFR-08 | **Retention:** delete only what can no longer match. Deliveries > 30 d; articles not seen for freshness + 7 d with no deliveries; soft-deleted alerts once their history is gone (design §6a) | **Must** *(raised from Could, D-023)* | D-013 |
 | NFR-09 | **Testability:** feed parser, article identity, tier matching and dedup covered by automated tests using **synthetic** RSS fixtures | Must | V-014 |
 | NFR-10 | **Runnability:** one documented command starts the app locally; email goes to a local mail catcher; Slack works with a real webhook if provided | Must | Plan |
 | NFR-11 | **Scale:** single process, single machine; a handful of users | Must | A-17 |
@@ -158,8 +163,9 @@ Phase 2 · 2026-11-24 · Timebox 0.5h
 - Sources other than BBC News RSS; cross-source merging
 - Content-based importance scoring (ML, LLM or home-made rules): explicitly
   rejected by the owner (D-010)
-- Digests, quiet hours, cooldowns, retractions when an article drops out of a
-  tier
+- Scheduled/timed digests, quiet hours, cooldowns, retractions when an
+  article drops out of a tier. *(Per-poll batching is **in** scope,
+  D-023. It groups matches from one cycle only.)*
 - Destination verification (US-04's test message is the substitute)
 - Admin editing users' alerts
 - Production deployment, commercial use (would need a BBC licence)
@@ -194,15 +200,20 @@ papered over here.
 
 | Priority | Stories / NFRs |
 |---|---|
-| **Must** | US-01, 02, 03, 04, 05; AS-01, 02, 06; NFR-01…07, 09…12 |
+| **Must** | US-01, 02, 03, 04, 05; AS-01, 02, 06; NFR-01…12 |
 | **Should** | AS-04, AS-05, AS-07 |
-| **Could** | US-06, AS-03, AS-08, NFR-08 |
+| **Could** | US-06, AS-03, AS-08 |
 
 *Revised by owner (D-014):* US-04 raised; AS-04, AS-05 and AS-03 lowered.
 
-- **Budget:** the Must set shrank. Two admin screens (all alerts, delivery
-  log) became Should, and one small user action (test send) became Must. That
-  leaves about 0.25–0.5h of slack in the 3.5h build.
+- **Budget (re-estimated after design, D-023):**
+  - After D-014 the Must set had 0.25–0.5h of slack in a 3.5h build.
+  - Design additions then cost about 50 min: BBC assembly, soft delete,
+    batching, retention (NFR-08 → Must).
+  - The build is now **~4.15h**. This consumes **0.65h of the 0.75h project
+    buffer**, leaving 0.1h.
+  - **No slack remains**, so the cut order below is now likely to be used,
+    not merely possible.
 - **How Must delivery is verified without the log view:**
   - US-04 test sends, plus real arrival in the mail catcher / Slack
     channel.
@@ -212,3 +223,5 @@ papered over here.
   1. drop all Should/Could
   2. simplify US-03 to enable/disable only (no delete)
   3. AS-02 shows only last poll + status
+  4. batch format: plain list in both channels, no per-channel polish
+     (batching itself stays: it is the flood guard)

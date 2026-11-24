@@ -198,3 +198,82 @@ Items resting on model memory are marked **to verify** in ADR 0001.
 - **Tests:** xUnit v3. FluentAssertions 8.x excluded (licence).
 - **Assertion style:** plain xUnit `Assert` (owner, prompt 019). No extra
   dependency; Shouldly and AwesomeAssertions were the alternatives.
+
+### D-019 · 2026-11-24 · Design v1: single process, editorial tiers, self-describing channels
+- Design: [03-design.md](03-design.md).
+- ADRs: [0002 importance](adr/0002-importance-model.md),
+  [0003 channels](adr/0003-channel-abstraction.md).
+- **AI-introduced rules, each from a failure mode identified while
+  designing:**
+  - baseline poll per feed (otherwise the first start floods alerts)
+  - ranks only change after a successful Top stories fetch
+  - unknown `pubDate` ⇒ not eligible
+  - Pending-row resume ⇒ at-least-once delivery
+  - `ConfigFields` on channels, so the destination form doesn't need a page
+    change per channel (NFR-02)
+- **Open owner questions:** 03-design §12 Q1–Q5.
+
+### D-020 · 2026-11-24 · Two projects kept; source behind `IArticleSource` (owner chose option A)
+- **Context:** the owner asked why Core/Web exist (prompt 022). Answering
+  exposed that NFR-03 wasn't actually met (V-026).
+- **Options:**
+  - **A.** two projects + source interface
+  - **B.** single project + interface
+  - **C.** three projects (Core / Infrastructure / Web)
+- **Choice:** A (prompt 023).
+- **Why:** a compiler-enforced boundary for the matcher/domain at ~5 min cost.
+  C adds ceremony a 3.5h build can't justify.
+- **Consequences:**
+  - Core is BCL-only.
+  - All BBC specifics live in `Web/Sources/Bbc`.
+  - BBC parser tests move to the Web side.
+  - The poll-cycle integration test uses a fake `IArticleSource`, which also
+    demonstrates NFR-03.
+  - Stated limitation: the Headline / Front page tiers require any
+    replacement source to provide a ranked TopStories list.
+
+### D-021 · 2026-11-24 · BBC source in its own assembly `Notifier.Sources.Bbc` (owner-raised)
+- **Context:** the owner asked whether the BBC source should be a separate
+  assembly (prompt 024). The AI's earlier options had skipped this narrow
+  variant (V-028).
+- **Choice:** four projects: Core, Sources.Bbc, Web, Tests.
+  - BBC types are `internal`.
+  - The only public surface is `AddBbcNewsSource()`.
+  - Tests use `InternalsVisibleTo`.
+- **Why:**
+  - a compiler-enforced encapsulation of BBC specifics
+  - the Syndication dependency leaves the host
+  - NFR-03 swap = a project reference + one line
+  - ~5–10 min cost
+- **Deliberate asymmetry:** channels stay in Web. NFR-02 needs *adding*
+  channels, not swapping them, and there's no channel-side equivalent of the
+  BBC licence risk.
+
+### D-022 · 2026-11-24 · Owner decisions on design Q1–Q5 (prompt 027)
+- **Q1 ✅** Tier decides. Headline/Front page ignore topics; topics apply to
+  the All tier only. Keyword narrows any tier.
+- **Q2 ✅** ≤ 1 destination per channel per alert.
+- **Q3 ✅** No edit in v1. **Soft delete** (`Alert.DeletedAtUtc`) keeps
+  delivery history.
+- **Q4 ✅** At-least-once delivery after a crash.
+- **Q5 ❌** Baseline poll rejected. The owner proposed batching several
+  matches into one message instead. Batching and a retention policy are being
+  analysed (D-023, pending).
+
+### D-023 · 2026-11-24 · Per-poll batching (owner) + retention policy (NFR-08 → Must)
+- **Batching (owner-proposed, replaces the rejected Q5 baseline):**
+  - Matches from one poll cycle are grouped per (alert, destination) into
+    one message, max 20 items + "…and N more".
+  - `Delivery` rows stay per article (once-only unchanged) and gain a
+    `BatchId`.
+  - `Notification` becomes a list of items.
+  - Not a timed digest. Digests remain a non-goal.
+- **Retention (owner asked; AI's design had 3 flaws, V-030):**
+  - Invariant: delete only what can no longer match.
+  - Deliveries are kept 30 d.
+  - Articles are deleted when not seen for freshness + 7 d and no deliveries
+    remain.
+  - Soft-deleted alerts are removed after their history.
+  - Startup validation enforces the invariant.
+  - NFR-08 Could → **Must** (D-013 consistency).
+- **Budget:** build 3.5h → 4.15h. Buffer 0.75h → 0.1h (V-031).

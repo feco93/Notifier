@@ -29,3 +29,12 @@ Full session transcripts are exported to `prompts/transcripts/` at milestones.
 | 017 | [017-choose-razor-smtp4dev.md](017-choose-razor-smtp4dev.md) | Stack accepted: Razor Pages + smtp4dev (ADR 0001) |
 | 018 | [018-verify-libraries.md](018-verify-libraries.md) | Spikes: RSS parsing, email, test library licences |
 | 019 | [019-plain-assert.md](019-plain-assert.md) | Assertion style: plain xUnit Assert |
+| 020 | [020-commit-stack.md](020-commit-stack.md) | Commit stack ADR + spikes |
+| 021 | [021-start-design.md](021-start-design.md) | Phase 3 design + ADRs 0002/0003, self-checks |
+| 022 | [022-why-core-web.md](022-why-core-web.md) | Why two projects? Exposed NFR-03 not actually met |
+| 023 | [023-option-a.md](023-option-a.md) | Two projects + IArticleSource |
+| 024 | [024-separate-bbc-assembly.md](024-separate-bbc-assembly.md) | Owner asks: separate BBC assembly? |
+| 025 | [025-update-design-bbc-assembly.md](025-update-design-bbc-assembly.md) | Notifier.Sources.Bbc adopted |
+| 026 | [026-explain-questions.md](026-explain-questions.md) | In-depth Q1–Q5; data refutes Q1 default |
+| 027 | [027-decide-q1-q5.md](027-decide-q1-q5.md) | Owner decides Q1–Q4, rejects Q5; asks about batching + retention |
+| 028 | [028-adopt-batching-retention.md](028-adopt-batching-retention.md) | Batching + retention adopted; build re-budgeted |

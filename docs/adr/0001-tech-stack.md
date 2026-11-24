@@ -59,7 +59,7 @@ front; it may be added later for single buttons only if needed.
 | Email sending | MailKit 5.0.0 (MIT). Microsoft's docs recommend against `SmtpClient` for new code and name MailKit. Note the **5.x API** (`SendRequest`) | ✅ **verified** by spike + docs (prompt 018) |
 | Slack | `HttpClient` (via `IHttpClientFactory`) POST to webhook; host allow-list `hooks.slack.com` | AI default |
 | Tests | xUnit v3 (4.0.3, Apache-2.0) with **plain xUnit `Assert`**, no assertion library. FluentAssertions 8.x excluded: Xceed non-commercial licence, ✅ verified from the package | Owner-accepted (prompt 019) |
-| Solution layout | `Notifier.Web` (Razor Pages host + worker), `Notifier.Core` (domain, matcher, channel interface, no framework refs), `Notifier.Tests` | AI default |
+| Solution layout | `Notifier.Core` (domain, matcher, `IArticleSource` + `INotificationChannel` contracts; BCL only), **`Notifier.Sources.Bbc`** (all BBC specifics, internal; public `AddBbcNewsSource`), `Notifier.Web` (Razor Pages host, worker, EF, channel implementations), `Notifier.Tests` | Owner-confirmed (prompts 023, 025; D-020, D-021) |
 
 ## Consequences
 

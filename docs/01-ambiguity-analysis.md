@@ -232,7 +232,8 @@ decision log.
   criteria, one or more channel destinations, and an enabled flag.
   Pausing = disabling.
 - **A-09 (revised, phase 2 trace, V-015)** The rule is a **flat AND**:
-  - **topics:** any of the selected topics (OR within topics)
+  - **topics:** any of the selected topics (OR within topics). *Since Q1
+    (prompt 027): topics apply to the All tier only.*
   - **tier:** Headline / Front page / All (A-03′)
   - **keyword:** optional; contained in title or summary, case-insensitive
 
@@ -263,6 +264,8 @@ decision log.
       feed.
     - Mitigation: the tier choice itself plus the keyword filter.
     - Cooldowns/digests are out of scope for v1 (02-requirements §5).
+    - *Since D-023:* per-poll **batching** groups a cycle's matches into one
+      message per alert and destination.
   - No digests or quiet hours.
 - **A-13** "More channels later" = **code-level extension**. A new channel is
   one class implementing a `Channel` interface (validate config, send) plus a
@@ -325,8 +328,13 @@ Ordered by how much the answer would change the design:
 | BBC terms: automated collection (§7a) and metadata/computer analysis (§8a, §12) restricted; Public Service terms (likely governing) unread | **High for production, Medium for personal prototype** | Mitigations 1–8 in `notes/bbc-terms-review.md`; source behind an adapter interface so it can be swapped; production needs a BBC metadata licence |
 | Raw BBC feed data published in the public repo | Medium | `bbc-*.xml` git-ignored; synthetic test fixtures |
 | "Top stories order = priority" is an inference | Medium | Documented as an assumption; tiers are easy to retune |
-| Feed structure changes (e.g. GUID suffixes) | Low | Parser tests on saved samples in `notes/samples/` |
-| USGS id aliasing (M2, unverified) → duplicate notifications | Low–Medium | Accept; document; dedup on `(source, external_id)` |
-| Aftershock bursts (M3) → channel flooding | Medium | Severity threshold; cooldown as stretch |
-| Low real event volume (5 quakes ≥ 4.5 in the sampled day) → weak live demo | Low | Simulated source + admin "inject test event" |
-| `sig`→severity mapping is a judgement call | Low | Documented and tested; shown in notifications |
+| Feed structure changes (e.g. GUID suffixes, malformed dates) | Low | Parser tests on **synthetic** BBC-shaped fixtures (real captures are git-ignored, D-013); lenient date parser (V-021). *Corrected in phase 3: previously said "saved samples", contradicting D-013 (V-025)* |
+| ~~Topic × tier intersection misses stories BBC doesn't cross-list~~ | — | Resolved: tier decides, topics only for All (Q1, D-022) |
+| At-least-once delivery → rare duplicate after a crash | Low | Unique index + Pending-row resume (03-design §6) |
+| Breaking stories in the **All** tier of busy topics → many messages | Low | **Per-poll batching** (D-023): one message per alert per cycle, max 20 items; plus tier + keyword choice |
+
+*Removed in phase 3 (V-025), stale since the switch to BBC:*
+- ~~USGS id aliasing~~
+- ~~aftershock bursts → severity threshold~~
+- ~~low quake volume → simulated source~~
+- ~~`sig`→severity mapping~~

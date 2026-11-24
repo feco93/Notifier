@@ -43,14 +43,15 @@ what was cut. Changes are recorded in
 | 1 | Brief deconstruction: AI-generated question list, critiqued & pruned, assumed answers | `01-ambiguity-analysis.md` | 0.75h | 1h |
 | 2 | Requirements & scope: personas, MVP stories, non-goals | `02-requirements.md` | 0.5h | 1.5h |
 | 3 | Design + 3 ADRs. *Stack decided at the start of phase 3 instead of the end, on the owner's stated preferences (D-015, ADR 0001)* | `03-design.md`, `adr/` | 1h | 2.5h |
-| 4 | Build MVP slices, one commit + validation entry each | code + tests | 3.5h | 6h |
-| 5 | Verification: E2E demo, independent AI review of core code, screenshots | `notes/` | 0.5h | 6.5h |
-| 6 | README, retrospective, transcript export | docs | 0.75h | 7.25h |
-|   | Buffer | | 0.75h | 8h |
+| 4 | Build MVP slices, one commit + validation entry each. *Re-estimated 3.5h → 4.15h after design additions (D-023)* | code + tests | 4.15h | 6.65h |
+| 5 | Verification: E2E demo, independent AI review of core code, screenshots | `notes/` | 0.5h | 7.15h |
+| 6 | README, retrospective, transcript export | docs | 0.75h | 7.9h |
+|   | Buffer *(was 0.75h; 0.65h consumed by design additions, D-023)* | | 0.1h | 8h |
 
 **Checkpoints (hard stops):**
 - **2.5h:** design done. If not, freeze it as-is and start building.
-- **5h:** if behind, apply the pre-agreed cut order in
+- **5h:** slices 1–4 must be done (was "slice 5 working"; moved because the
+  build grew to 4.15h). If behind, apply the pre-agreed cut order in
   [02-requirements.md](02-requirements.md) §7: drop Should/Could first, then
   simplify US-03 and AS-02. *(Was "drop the user UI", which is no longer
   allowed: US-01…05 are Must, D-014.)*
@@ -66,11 +67,11 @@ version still named USGS + a simulated source, which was stale.*
 | # | Slice | Stories | Est. |
 |---|---|---|---|
 | 1 | Skeleton, data model, test harness, hard-coded users + login | US-01, AS-01, NFR-12 | 0.5h |
-| 2 | BBC source adapter: RSS parse, article identity, rank, freshness; synthetic fixtures | NFR-03, 05, 07, 09 | 0.5h |
+| 2 | BBC source assembly (`Notifier.Sources.Bbc`, internal + `AddBbcNewsSource`): RSS parse, article key, positions, lenient dates; synthetic fixtures | NFR-03, 05, 07, 09 | 0.6h |
 | 3 | Tier matcher: pure functions, test-first, independently reviewed | US-05 (matching) | 0.5h |
-| 4 | `Channel` interface + registry → Email → Slack; test send | US-04, NFR-02, 06 | 0.75h |
-| 5 | Poller + dispatcher: idempotent deliveries recorded, one retry | US-05, NFR-01, 04 | 0.5h |
-| 6 | User view: create / list / enable-disable / delete alerts, test-send button | US-02, 03, 04 | 0.5h |
+| 4 | `Channel` interface + registry → Email → Slack (single + **batch** formats); test send | US-04, NFR-02, 06 | 0.9h |
+| 5 | Poller + dispatcher: idempotent deliveries, **batching per (alert, destination)**, one retry, **retention purge** | US-05, NFR-01, 04, 08 | 0.85h |
+| 6 | User view: create (tier-dependent topics) / list / enable-disable / **soft** delete, test-send button | US-02, 03, 04 | 0.55h |
 | 7 | Admin Must: feed status + Poll now | AS-02, AS-06 | 0.25h |
 | — | **Should** (if ahead): all-alerts view, delivery-log view, inject synthetic article | AS-04, 05, 07 | — |
 
