@@ -20,3 +20,6 @@ Full session transcripts are exported to `prompts/transcripts/` at milestones.
 | 008 | [008-confirm-bbc.md](008-confirm-bbc.md) | Source confirmed (BBC RSS); importance assumptions finalized |
 | 009 | [009-bbc-terms.md](009-bbc-terms.md) | BBC terms reviewed; compliance posture; raw feed data kept out of repo |
 | 010 | [010-keep-bbc.md](010-keep-bbc.md) | Owner accepts BBC with mitigations; phase 1 closed |
+| 011 | [011-commit-phase1.md](011-commit-phase1.md) | Commit phase 1 |
+| 012 | [012-start-phase2.md](012-start-phase2.md) | Phase 2: requirements + traceability check |
+| 013 | [013-reprioritize.md](013-reprioritize.md) | Owner re-prioritizes AS-03/04/05, US-04 |

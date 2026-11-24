@@ -215,8 +215,12 @@ decision log.
   is the hardest problem in the brief, and faking it with keyword hacks would
   look like more than it is. Better to show the architecture handles the
   category and be honest about it.
-- **A-06** Sources are **free, keyless, and redistributable**. USGS data is
-  public domain. The simulated source enables deterministic demos and tests.
+- ~~**A-06** Sources are **free, keyless, and redistributable**. USGS data is
+  public domain. The simulated source enables deterministic demos and tests.~~
+  *Superseded (found by the phase 2 trace, V-015):*
+  - BBC RSS is free and keyless but **not** redistributable (D-013).
+  - There is no simulated source any more. Deterministic tests use synthetic
+    RSS fixtures, and demos use admin "inject synthetic article" (AS-07).
 - **A-07 ✅ owner-confirmed** **Polling** for v1. The interval follows the
   source's declared cadence (BBC RSS declares `ttl=15` min), so expect
   latency of up to roughly 15 min. The earlier "every 2 min, < 5 min" target
@@ -227,13 +231,15 @@ decision log.
 - **A-08** An **Alert** is a saved rule owned by a user: name, rule
   criteria, one or more channel destinations, and an enabled flag.
   Pausing = disabling.
-- **A-09** The rule is a **flat AND** of optional criteria:
-  - category in a set
-  - severity ≥ N
-  - keyword contained in title/summary (case-insensitive)
-  - region as a lat/lon bounding box
+- **A-09 (revised, phase 2 trace, V-015)** The rule is a **flat AND**:
+  - **topics:** any of the selected topics (OR within topics)
+  - **tier:** Headline / Front page / All (A-03′)
+  - **keyword:** optional; contained in title or summary, case-insensitive
 
-  No OR or nesting in the MVP. Users who need OR create two alerts.
+  No other OR or nesting. Users who need it create two alerts.
+  - ~~severity ≥ N~~ and ~~region bounding box~~ were removed: BBC articles
+    have no severity or coordinates. These were left over from the USGS
+    design.
 - **A-10** One alert → **N channel destinations**. Each destination is a
   channel type plus its config (email address, Slack webhook URL).
 
@@ -249,8 +255,14 @@ decision log.
 - **A-12** Delivery semantics:
   - Immediate dispatch, with **idempotency key = (event, alert, destination)**.
   - **One retry** on failure. Every attempt is logged with status and error.
-  - Burst protection (M3) is a **stretch goal** (per-alert cooldown). Until
-    then, the minimum-severity threshold is the mitigation.
+  - ~~Burst protection (M3) is a stretch goal (per-alert cooldown). Until
+    then, the minimum-severity threshold is the mitigation.~~ *Revised
+    (V-015):*
+    - No severity threshold exists any more. With BBC, the burst risk sits in
+      the **All** tier: busy topics like Business carry about 58 items per
+      feed.
+    - Mitigation: the tier choice itself plus the keyword filter.
+    - Cooldowns/digests are out of scope for v1 (02-requirements §5).
   - No digests or quiet hours.
 - **A-13** "More channels later" = **code-level extension**. A new channel is
   one class implementing a `Channel` interface (validate config, send) plus a

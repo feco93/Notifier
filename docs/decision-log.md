@@ -146,3 +146,19 @@ Format: **ID · date · decision** — options considered → choice → why.
   architecture. Keeping the source swappable limits the cost of a later
   licence or source change. The production prerequisite is documented
   explicitly rather than ignored.
+
+### D-014 · 2026-11-24 · Owner re-prioritization of requirements
+- **Change (prompt 013):**
+  - US-04 test notification: Should → **Must**
+  - AS-04 all-alerts view: Must → **Should**
+  - AS-05 delivery-log view: Must → **Should**
+  - AS-03 recent articles: Should → **Could**
+- **Effect:** the Must scope shifts from admin screens toward the user's own
+  workflow. Build slack rises to about 0.25–0.5h.
+- **Clarification recorded:** *recording* delivery attempts stays Must
+  (NFR-04). Only the admin *view* moved to Should.
+- **Knock-on fixes in `plan.md`:**
+  - the priority order (was "admin view > user UI")
+  - the 5h checkpoint (was "drop the user UI", now forbidden)
+  - build slices, which still named USGS + a simulated source (stale since
+    D-011)

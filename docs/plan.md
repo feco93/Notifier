@@ -17,7 +17,8 @@ what was cut. Changes are recorded in
 4. **Vertical slices.** A thin end-to-end path (source → rule → channel) comes
    before breadth.
 5. **Priority under time pressure:** process artifacts > working core pipeline >
-   admin view > user UI polish > breadth (more sources/channels).
+   Must stories (02 §7) > Should > Could. *Revised with D-014: was "admin view
+   > user UI", which contradicted the owner's priorities.*
 
 ## Deliverables
 
@@ -49,31 +50,44 @@ what was cut. Changes are recorded in
 
 **Checkpoints (hard stops):**
 - **2.5h:** design done. If not, freeze it as-is and start building.
-- **5h:** if slice 5 isn't working, drop slice 7 (user UI) and use seeded
-  alerts plus the admin view for the demo.
+- **5h:** if behind, apply the pre-agreed cut order in
+  [02-requirements.md](02-requirements.md) §7: drop Should/Could first, then
+  simplify US-03 and AS-02. *(Was "drop the user UI", which is no longer
+  allowed: US-01…05 are Must, D-014.)*
 - **6.5h:** stop coding regardless. Remaining time goes to docs and evidence.
 
 ## Build slices (phase 4): MVP
 
 | # | Slice | Est. |
 |---|---|---|
-| 1 | Skeleton, data model, test harness | 0.5h |
-| 2 | Simulated source + **one** real source (USGS earthquakes), normalization to `Event` | 0.5h |
-| 3 | Rule-matching engine: pure functions, test-first, independently reviewed | 0.5h |
-| 4 | `Channel` interface + registry → Email → Slack | 0.75h |
-| 5 | Dispatcher: idempotency/dedup + delivery log (single retry, no backoff) | 0.5h |
-| 6 | Admin view: delivery log, source status, inject test event | 0.5h |
-| 7 | Minimal user view: create/list/delete alerts | 0.25h |
+*Revised for the BBC source (D-011) and owner priorities (D-014). The first
+version still named USGS + a simulated source, which was stale.*
 
-**Stretch (only if ahead of checkpoints):** RSS news + market sources,
-retries with backoff, per-rule cooldown, a third channel (webhook) to prove
-extensibility, docker-compose, real auth.
+| # | Slice | Stories | Est. |
+|---|---|---|---|
+| 1 | Skeleton, data model, test harness, hard-coded users + login | US-01, AS-01, NFR-12 | 0.5h |
+| 2 | BBC source adapter: RSS parse, article identity, rank, freshness; synthetic fixtures | NFR-03, 05, 07, 09 | 0.5h |
+| 3 | Tier matcher: pure functions, test-first, independently reviewed | US-05 (matching) | 0.5h |
+| 4 | `Channel` interface + registry → Email → Slack; test send | US-04, NFR-02, 06 | 0.75h |
+| 5 | Poller + dispatcher: idempotent deliveries recorded, one retry | US-05, NFR-01, 04 | 0.5h |
+| 6 | User view: create / list / enable-disable / delete alerts, test-send button | US-02, 03, 04 | 0.5h |
+| 7 | Admin Must: feed status + Poll now | AS-02, AS-06 | 0.25h |
+| — | **Should** (if ahead): all-alerts view, delivery-log view, inject synthetic article | AS-04, 05, 07 | — |
+
+**Stretch (Could):** notification history (US-06), recent articles (AS-03),
+retry button (AS-08), retention purge (NFR-08), a third channel to show
+extensibility, docker-compose.
 
 **Explicit non-goals for this budget:** ML/NLP-based importance detection,
 production auth/multi-tenancy, digests/scheduling, horizontal scaling. These
 get documented as future work, not built.
 
 ## Initial design hypotheses (to be validated in phases 1–3)
+
+> **Superseded.** Kept as the starting point. Phase 1 replaced the
+> event/severity/USGS model with BBC editorial-prominence tiers (D-010,
+> D-011). Current truth is in `01-ambiguity-analysis.md` (A-02′…A-04′) and
+> `02-requirements.md`.
 
 - **"Important"** = normalized `Event` (category, severity, geo, tags, source,
   time) **matched by a user-defined rule** with thresholds. No ML.
