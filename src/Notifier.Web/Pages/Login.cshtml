@@ -1,0 +1,19 @@
+@page
+@model Notifier.Web.Pages.LoginModel
+@{
+    ViewData["Title"] = "Log in";
+}
+<h1>Log in</h1>
+<p class="muted">Prototype with hard-coded dev accounts (see README). Not for production use.</p>
+<form method="post">
+    <input type="hidden" asp-for="ReturnUrl" />
+    <label asp-for="Username">Username</label>
+    <input asp-for="Username" type="text" autocomplete="username" autofocus />
+    <label asp-for="Password">Password</label>
+    <input asp-for="Password" type="password" autocomplete="current-password" />
+    @if (Model.Error is not null)
+    {
+        <p class="error">@Model.Error</p>
+    }
+    <p><button type="submit">Log in</button></p>
+</form>

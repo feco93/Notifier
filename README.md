@@ -3,9 +3,51 @@
 Home assignment: take a deliberately vague product brief to a working
 implementation using AI agents, with the process documented.
 
-**Status:** Phase 3 (design) drafted, 5 open owner questions. Phases 0–2 complete. Source: BBC News RSS,
-personal prototype (see [notes/bbc-terms-review.md](notes/bbc-terms-review.md)).
-No implementation yet.
+**Status:** Phase 4 (build), slice 1 of 7 done: solution, data model, login.
+Source: BBC News RSS, personal prototype (see
+[notes/bbc-terms-review.md](notes/bbc-terms-review.md)).
+
+## Run it (current state)
+
+Requires the .NET SDK (10 or later; the app targets `net10.0` LTS).
+
+```powershell
+dotnet run --project src/Notifier.Web
+```
+
+Then open the URL it prints and log in. `run.ps1`, which also starts the
+smtp4dev mail catcher, arrives with slice 4 (design §9a).
+
+**Dev-only accounts** (hard-coded per A-01; hashes in
+`src/Notifier.Web/appsettings.Development.json`, never use in production):
+
+| User | Password | Role |
+|---|---|---|
+| alice | `alice-dev-only` | User |
+| bob | `bob-dev-only` | User |
+| admin | `admin-dev-only` | Admin |
+
+To add or change a user, generate a hash with:
+
+```powershell
+dotnet run --project src/Notifier.Web -- hash-password
+```
+
+**Tests:**
+
+```powershell
+dotnet test --solution Notifier.slnx
+```
+
+**Database:** SQLite at `src/Notifier.Web/notifier.db`, created on first
+start with `EnsureCreated()`. That call **never updates an existing schema**,
+so delete the file after pulling a slice that changes the model (prototype
+trade-off, design §3).
+
+**Known prototype gaps** (deliberate, not production-ready):
+- no login rate limiting or lockout
+- no HTTPS redirect / HSTS
+- no custom error page outside Development
 
 ## Where to look
 

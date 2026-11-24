@@ -1,0 +1,5 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\Notifier.Core\Notifier.Core.csproj" />
+  </ItemGroup>
+</Project>

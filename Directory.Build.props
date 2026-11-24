@@ -1,0 +1,9 @@
+<Project>
+  <!-- Shared settings for all projects (ADR 0001: net10.0 LTS, built with the installed .NET 11 SDK). -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+</Project>

@@ -12,6 +12,8 @@ venv/
 htmlcov/
 .idea/
 .vscode/
+.vs/
+*.user
 .claude/settings.local.json
 
 # Raw BBC feed captures: BBC terms §12 restrict exporting RSS metadata.

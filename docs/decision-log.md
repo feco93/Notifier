@@ -277,3 +277,17 @@ Items resting on model memory are marked **to verify** in ADR 0001.
   - Startup validation enforces the invariant.
   - NFR-08 Could → **Must** (D-013 consistency).
 - **Budget:** build 3.5h → 4.15h. Buffer 0.75h → 0.1h (V-031).
+
+### D-024 · 2026-11-24 · Code comment convention (owner, prompt 032)
+- **Rule:** comments only state a short, non-obvious *why*: a security
+  choice, a framework gotcha or an invariant.
+- **Not allowed in code:**
+  - decision, validation or requirement IDs
+  - design-doc section references
+  - "found in review" or other process history
+  - comments that restate the code
+  - requirement IDs in user-visible UI text
+- **Why:** the traceability trail lives in these logs. Code should read
+  cleanly on its own.
+- **Applied:** all slice 1 files trimmed. A grep for process references in
+  `src/` and `tests/` finds none.

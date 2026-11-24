@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@(ViewData["Title"] is string t ? $"{t} · Notifier" : "Notifier")</title>
+    <style>
+        :root { color-scheme: light dark; --accent: #2563eb; --muted: #6b7280; --border: #d1d5db; }
+        body { font-family: system-ui, sans-serif; max-width: 960px; margin: 0 auto; padding: 0 16px 48px; line-height: 1.5; }
+        header { display: flex; gap: 16px; align-items: center; border-bottom: 1px solid var(--border); padding: 12px 0; margin-bottom: 24px; }
+        header .brand { font-weight: 700; margin-right: auto; }
+        a { color: var(--accent); }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+        label { display: block; margin: 12px 0 4px; font-weight: 600; }
+        input[type=text], input[type=password], input[type=email], input[type=url], select { padding: 6px 8px; width: 100%; max-width: 420px; box-sizing: border-box; }
+        button { padding: 6px 14px; cursor: pointer; }
+        .error { color: #b91c1c; }
+        .muted { color: var(--muted); }
+        form.inline { display: inline; }
+    </style>
+</head>
+<body>
+<header>
+    <span class="brand">Notifier</span>
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <a href="/">My alerts</a>
+        @if (User.IsInRole(Roles.Admin))
+        {
+            <a href="/Admin">Admin</a>
+        }
+        <span class="muted">@User.Identity.Name</span>
+        <form method="post" asp-page="/Logout" class="inline"><button type="submit">Log out</button></form>
+    }
+</header>
+<main>
+    @RenderBody()
+</main>
+</body>
+</html>
