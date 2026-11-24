@@ -58,3 +58,91 @@ Format: **ID · date · decision** — options considered → choice → why.
 - **Added:** hard checkpoints at 2.5h / 5h / 6.5h with pre-decided cut actions,
   and an explicit priority order (process > core pipeline > admin > user UI >
   breadth).
+
+### D-006 · 2026-11-24 · ~~"Important" = normalized severity + user rules, no ML~~ superseded by D-010
+- **Options:**
+  - (a) LLM/ML classifier judges importance
+  - (b) curated global importance set by admins
+  - (c) per-source severity normalization (0–100) + per-user rules
+- **Choice:** (c). Detail: A-02…A-04 in `01-ambiguity-analysis.md`.
+- **Why:** deterministic, explainable to the user, unit-testable, fits the
+  budget. (a) is unverifiable within 6–8h. (b) needs an editorial role the
+  brief doesn't mention.
+- **Follow-up:** formal ADR in phase 3.
+
+### D-007 · 2026-11-24 · ~~MVP categories: real earthquakes, simulated news/markets~~ superseded by D-011
+- **Choice:** USGS earthquakes as the single real source. News and markets go
+  through a simulated source.
+- **Why:**
+  - Earthquakes have an objective numeric severity, verified in the live
+    sample (`sig`, `mag`).
+  - Keyword-based "breaking news" detection would overstate what's built.
+  - Simulated categories still prove the pipeline is category-agnostic.
+- **Needs PM sign-off** (A-05).
+
+### D-008 · 2026-11-24 · Slack via incoming webhooks, not a Slack app
+- **Why:** an OAuth Slack app needs app registration, a public callback and
+  token storage, which is too much for the budget and can't be demoed offline.
+  Webhooks are a pasted URL. Trade-off accepted: less polished, per-channel.
+- **Owner-confirmed** in prompt 007.
+
+### D-009 · 2026-11-24 · Personal use, hard-coded user + admin (owner decision)
+- **Context:** the AI assumed an org-internal, single-tenant tool (A-01). The
+  owner overrode it.
+- **Choice:** personal use; roles `user` and `admin`; v1 users hard-coded.
+- **Consequence:** no registration, user management or tenancy. Auth stays
+  minimal (A-16).
+
+### D-010 · 2026-11-24 · Importance comes from the source, not from our rules (owner decision)
+- **Context:** the owner rejected AI-designed severity scoring/rules as
+  overcomplicated (prompt 007).
+- **Choice:** pick one source first, then design importance around what that
+  source natively provides.
+- **Draft:** for BBC RSS, importance = **editorial prominence**, i.e.
+  position in the Top-stories feed. Tiers: Headline / Front page / All. See
+  `notes/source-evaluation.md`.
+- **Status:** assumption-level definition fixed in A-02′…A-04′ (prompt 008).
+  Detailed design and formal ADR come in phase 3.
+
+### D-011 · 2026-11-24 · One free, multi-topic source; BBC News RSS recommended
+- **Options evaluated with live calls:**
+  - BBC RSS: works, keyless
+  - GDELT: repeated HTTP 429
+  - Guardian: needs a registered key; the "test" key returned 401
+  - NewsAPI-style services: key and free-tier limits, not verified
+  - USGS: one topic only
+- **Recommendation:** BBC News RSS. Runner-up: GDELT (best importance metric,
+  unreliable access observed).
+- **Status:** ✅ **accepted by owner** (prompt 008).
+- **v1 topic feeds:** Top stories, World, Business, Science & Environment,
+  Technology.
+- **Open item:** BBC terms of use are unverified (V-012).
+
+### D-012 · 2026-11-24 · Polling at the source's declared cadence (owner-confirmed)
+- **Choice:** poll; interval ≥ feed `ttl` (15 min for BBC).
+- **Consequence:** the AI's earlier "< 5 min latency" target is dropped, since
+  it was set before the source was known.
+
+### D-013 · 2026-11-24 · BBC terms compliance posture for v1
+- **Context:** the owner supplied the BBC Global Terms of Use (prompt 009).
+  - Personal, non-commercial use is allowed.
+  - Individuals may use the RSS feed with attribution.
+  - Automated collection, metadata export and "computer analysis" need
+    permission.
+  - Business use needs a licence.
+- **Options:**
+  - (a) keep BBC with mitigations as a personal prototype
+  - (b) switch source now (back to the runners-up: GDELT unreliable, Guardian
+    needs a key)
+  - (c) seek a BBC licence (not feasible in the timeframe)
+- **Choice:** (a), ✅ **accepted by owner** (prompt 010). Mitigations:
+  - personal use only
+  - forward title + summary + link with attribution; no images or logos
+  - poll ≥ TTL
+  - minimal retention
+  - no raw feed data in the repo
+  - source behind an adapter interface
+- **Why:** the prototype's purpose is to demonstrate the alerting
+  architecture. Keeping the source swappable limits the cost of a later
+  licence or source change. The production prerequisite is documented
+  explicitly rather than ignored.

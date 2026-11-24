@@ -11,3 +11,7 @@ htmlcov/
 .idea/
 .vscode/
 .claude/settings.local.json
+
+# Raw BBC feed captures: BBC terms §12 restrict exporting RSS metadata.
+# Kept locally as evidence only; tests use synthetic fixtures. See notes/bbc-terms-review.md
+notes/samples/bbc-*.xml
