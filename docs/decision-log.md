@@ -162,3 +162,39 @@ Format: **ID · date · decision** — options considered → choice → why.
   - the 5h checkpoint (was "drop the user UI", now forbidden)
   - build slices, which still named USGS + a simulated source (stale since
     D-011)
+
+### D-015 · 2026-11-24 · Stack: ASP.NET Core Razor Pages on .NET 10 LTS → [ADR 0001](adr/0001-tech-stack.md)
+- **Owner preferences:** C#/TypeScript, ASP.NET LTS/React (prompt 015).
+- **AI analysis:** an API + React SPA costs about 30–45 min more (two
+  pipelines, proxy/CORS, SPA auth), which consumes all build slack.
+- **Owner choice (prompts 016–017):** reduce cost and use **Razor Pages**.
+  React/TypeScript are dropped.
+- **Timing note:** decided at the *start* of phase 3 instead of the end
+  (plan v2). This still honours D-004's intent: requirements existed first.
+
+### D-016 · 2026-11-24 · Local email catcher: smtp4dev (fallback Mailpit)
+- **Why:** installs through the `dotnet` CLI (no Docker), has a web UI for
+  evidence screenshots, supports NFR-10.
+- **Pre-decided fallback:** if smtp4dev doesn't run on the installed runtimes,
+  use the Mailpit standalone binary.
+
+### D-017 · 2026-11-24 · Remaining stack defaults (AI-proposed, owner did not object)
+- SQLite + EF Core
+- Cookie auth with config-defined users
+- `BackgroundService` + `PeriodicTimer`
+- `TimeProvider`
+- Syndication RSS parser
+- MailKit
+- xUnit
+- three-project layout
+
+Items resting on model memory are marked **to verify** in ADR 0001.
+
+### D-018 · 2026-11-24 · Verified library choices (prompt 018)
+- **RSS:** `System.ServiceModel.Syndication` 10.0.15 with a lenient
+  `DateTimeParser`. Alternative `XmlReader` parser not needed.
+- **Email:** MailKit 5.0.0, targeting smtp4dev locally (both verified end to
+  end).
+- **Tests:** xUnit v3. FluentAssertions 8.x excluded (licence).
+- **Assertion style:** plain xUnit `Assert` (owner, prompt 019). No extra
+  dependency; Shouldly and AwesomeAssertions were the alternatives.

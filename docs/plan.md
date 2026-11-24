@@ -42,7 +42,7 @@ what was cut. Changes are recorded in
 | 0 | Scaffolding | Repo, logs | 0.25h | 0.25h |
 | 1 | Brief deconstruction: AI-generated question list, critiqued & pruned, assumed answers | `01-ambiguity-analysis.md` | 0.75h | 1h |
 | 2 | Requirements & scope: personas, MVP stories, non-goals | `02-requirements.md` | 0.5h | 1.5h |
-| 3 | Design + 3 ADRs, **ending with the stack choice** (D-004) | `03-design.md`, `adr/` | 1h | 2.5h |
+| 3 | Design + 3 ADRs. *Stack decided at the start of phase 3 instead of the end, on the owner's stated preferences (D-015, ADR 0001)* | `03-design.md`, `adr/` | 1h | 2.5h |
 | 4 | Build MVP slices, one commit + validation entry each | code + tests | 3.5h | 6h |
 | 5 | Verification: E2E demo, independent AI review of core code, screenshots | `notes/` | 0.5h | 6.5h |
 | 6 | README, retrospective, transcript export | docs | 0.75h | 7.25h |

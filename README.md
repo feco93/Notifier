@@ -16,6 +16,7 @@ No implementation yet.
 | Ambiguity analysis & assumptions | [docs/01-ambiguity-analysis.md](docs/01-ambiguity-analysis.md) |
 | Requirements & scope | [docs/02-requirements.md](docs/02-requirements.md) |
 | Decisions | [docs/decision-log.md](docs/decision-log.md), [docs/adr/](docs/adr/) |
+| Tech stack | [docs/adr/0001-tech-stack.md](docs/adr/0001-tech-stack.md) |
 | How AI output was checked | [docs/validation-log.md](docs/validation-log.md) |
 | Prompt history | [prompts/](prompts/) |
 | Scratch / evidence | [notes/](notes/) |

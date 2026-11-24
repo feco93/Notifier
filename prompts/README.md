@@ -23,3 +23,9 @@ Full session transcripts are exported to `prompts/transcripts/` at milestones.
 | 011 | [011-commit-phase1.md](011-commit-phase1.md) | Commit phase 1 |
 | 012 | [012-start-phase2.md](012-start-phase2.md) | Phase 2: requirements + traceability check |
 | 013 | [013-reprioritize.md](013-reprioritize.md) | Owner re-prioritizes AS-03/04/05, US-04 |
+| 014 | [014-commit-phase2.md](014-commit-phase2.md) | Commit phase 2 |
+| 015 | [015-stack-preferences.md](015-stack-preferences.md) | Owner's stack preferences; remaining decisions |
+| 016 | [016-server-rendered-options.md](016-server-rendered-options.md) | Server-rendered options; smtp4dev rationale |
+| 017 | [017-choose-razor-smtp4dev.md](017-choose-razor-smtp4dev.md) | Stack accepted: Razor Pages + smtp4dev (ADR 0001) |
+| 018 | [018-verify-libraries.md](018-verify-libraries.md) | Spikes: RSS parsing, email, test library licences |
+| 019 | [019-plain-assert.md](019-plain-assert.md) | Assertion style: plain xUnit Assert |
