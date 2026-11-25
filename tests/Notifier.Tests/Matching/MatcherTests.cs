@@ -12,7 +12,7 @@ public sealed class MatcherTests
     private static Alert NewAlert(Tier tier, string? keyword = null, params Topic[] topics) => new()
     {
         Id = 1, OwnerUsername = "u", Name = "A", Tier = tier, Keyword = keyword, Enabled = true,
-        CreatedAtUtc = AlertCreated,
+        CreatedAtUtc = AlertCreated, ActiveSinceUtc = AlertCreated,
         Topics = [.. topics.Select(t => new AlertTopic { AlertId = 1, Topic = t })],
     };
 
@@ -197,6 +197,16 @@ public sealed class MatcherTests
         var article = NewArticle(rank: 1);
         article.FirstSeenAtUtc = AlertCreated;
         Assert.Equal(Rejection.SeenBeforeAlert, Eval(NewAlert(Tier.Headline), article).Rejection);
+    }
+
+    [Fact]
+    public void Re_enabled_alert_does_not_backfill_articles_seen_while_it_was_off()
+    {
+        var alert = NewAlert(Tier.Headline);
+        alert.ActiveSinceUtc = Now.AddMinutes(-10); // re-enabled after the article was first seen
+        var article = NewArticle(rank: 1);
+        article.FirstSeenAtUtc = Now.AddMinutes(-30);
+        Assert.Equal(Rejection.SeenBeforeAlert, Eval(alert, article).Rejection);
     }
 
     [Fact]

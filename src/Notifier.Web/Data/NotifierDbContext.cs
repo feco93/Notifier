@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Notifier.Core.Domain;
 
@@ -13,6 +14,10 @@ public sealed class NotifierDbContext(DbContextOptions<NotifierDbContext> option
     public DbSet<Destination> Destinations => Set<Destination>();
     public DbSet<Delivery> Deliveries => Set<Delivery>();
     public DbSet<FeedStatus> FeedStatuses => Set<FeedStatus>();
+
+    // Every query that loads several collections must state single vs split explicitly.
+    protected override void OnConfiguring(DbContextOptionsBuilder options) =>
+        options.ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
 
     protected override void ConfigureConventions(ModelConfigurationBuilder builder)
     {

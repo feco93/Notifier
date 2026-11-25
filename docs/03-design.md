@@ -138,7 +138,7 @@ erDiagram
 |---|---|---|
 | **Article** | `Key` (PK, string), `Title`, `Summary`, `Url`, `PublishedAtUtc?`, `FirstSeenAtUtc`, `LastSeenAtUtc`, `OnTopStories`, `TopStoriesRank?`, `IsSynthetic` | `Key` = last URL path segment, no query/fragment [A-02′]. `PublishedAtUtc` null when missing or unparseable (spike) |
 | **ArticleTopic** | `ArticleKey`, `Topic`, `LastSeenAtUtc` | PK (ArticleKey, Topic). An article can be in several feeds (29/144 observed) |
-| **Alert** | `Id`, `OwnerUsername`, `Name`, `Tier`, `Keyword?`, `Enabled`, `CreatedAtUtc`, `DeletedAtUtc?` | Every query filtered by owner [US-03]. **Soft delete:** deleting sets `DeletedAtUtc`. The alert disappears from the user's list and never matches, but its `Delivery` rows stay for the admin log (US-03; Q3 gap found in V-029) |
+| **Alert** | `Id`, `OwnerUsername`, `Name`, `Tier`, `Keyword?`, `Enabled`, `CreatedAtUtc`, `ActiveSinceUtc`, `DeletedAtUtc?` | Every query filtered by owner [US-03]. **Soft delete:** deleting sets `DeletedAtUtc`. The alert disappears from the user's list and never matches, but its `Delivery` rows stay for the admin log (US-03; Q3 gap found in V-029) |
 | **AlertTopic** | `AlertId`, `Topic` | ≥ 1 when Tier = All; none for Headline/FrontPage [US-02, Q1] |
 | **Destination** | `Id`, `AlertId`, `ChannelKey`, `ConfigJson` | ≤ 1 per channel per alert in v1 (ADR 0003). Config holds secrets → never logged, masked in UI [NFR-06] |
 | **Delivery** | `Id`, `ArticleKey?`, `AlertId`, `DestinationId`, `BatchId?`, `Kind` (Real/Test), `Status` (Pending/Sent/Failed), `Reason?`, `Attempts`, `LastError?`, `CreatedAtUtc`, `CompletedAtUtc?` | **Unique index (ArticleKey, AlertId, DestinationId)** = once-only guarantee [NFR-04]. Test sends have `ArticleKey` null; SQLite treats NULLs as distinct, so the index allows repeats |
@@ -172,7 +172,7 @@ An article matches an alert when **all** of these hold:
 | # | Condition | Source |
 |---|---|---|
 | 1 | `alert.Enabled` and not deleted (`DeletedAtUtc` null) | US-03 |
-| 2 | `article.FirstSeenAtUtc > alert.CreatedAtUtc` | A-04′ (no backfill) |
+| 2 | `article.FirstSeenAtUtc > alert.ActiveSinceUtc`, set at creation **and on every re-enable**. *Was `CreatedAtUtc` until slice 6, which would have backfilled articles seen while the alert was disabled, contrary to US-03 (V-065).* | A-04′, US-03 (no backfill) |
 | 3 | `article.PublishedAtUtc` is known **and** its age ≤ `FreshnessWindow` (24h), where age = `now − min(PublishedAtUtc, FirstSeenAtUtc)`. *The `min` was added in slice 5: without it a future-dated article stays fresh forever and breaks the retention invariant (§6a, V-061).* | A-04′, spike: unknown date ⇒ not eligible |
 | 4 | **Tier = All:** the article appears in at least one of the alert's topics | A-09, Q1 |
 | 5 | **Tier = FrontPage:** `OnTopStories` (any section). **Tier = Headline:** `TopStoriesRank ≤ HeadlineN` (5), where the rank exists only for the **lead section** (D-025). Topics are **not used** for these tiers | A-03′, Q1, D-025 |

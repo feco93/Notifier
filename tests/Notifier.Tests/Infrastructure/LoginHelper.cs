@@ -26,6 +26,15 @@ public static partial class LoginHelper
         return await client.PostAsync("/Login", new FormUrlEncodedContent(fields), TestContext.Current.CancellationToken);
     }
 
+    /// <summary>Posts a form with the antiforgery token taken from <paramref name="formPage"/>.</summary>
+    public static async Task<HttpResponseMessage> PostFormAsync(HttpClient client, string formPage, string postUrl,
+        IEnumerable<KeyValuePair<string, string>> fields)
+    {
+        var token = await GetAntiforgeryTokenAsync(client, formPage);
+        var all = fields.Append(new("__RequestVerificationToken", token));
+        return await client.PostAsync(postUrl, new FormUrlEncodedContent(all), TestContext.Current.CancellationToken);
+    }
+
     [GeneratedRegex("name=\"__RequestVerificationToken\"[^>]*value=\"([^\"]+)\"")]
     private static partial Regex TokenRegex();
 }

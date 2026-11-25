@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Notifier.Web.Auth;
 
 namespace Notifier.Tests.Infrastructure;
@@ -15,9 +17,13 @@ public sealed class NotifierFactory : WebApplicationFactory<Program>
     public string DatabasePath { get; } =
         Path.Combine(Path.GetTempPath(), $"notifier-test-{Guid.NewGuid():N}.db");
 
+    /// <summary>Extra service registrations for a test, e.g. a fake notification channel.</summary>
+    public Action<IServiceCollection>? ExtraServices { get; init; }
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Testing");
+        if (ExtraServices is not null) builder.ConfigureTestServices(ExtraServices);
         // UseSetting: Program reads the DB path before Build().
         builder.UseSetting("Notifier:DatabasePath", DatabasePath);
         builder.ConfigureAppConfiguration(c => c.AddInMemoryCollection(new Dictionary<string, string?>

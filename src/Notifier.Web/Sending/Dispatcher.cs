@@ -32,7 +32,7 @@ public sealed class Dispatcher(
         var now = time.GetUtcNow().UtcDateTime;
         var settings = new MatchSettings(options.Value.FreshnessWindow, options.Value.HeadlineN);
         var articles = await db.Articles.Include(a => a.Topics).Where(a => candidateKeys.Contains(a.Key)).ToListAsync(ct);
-        var alerts = await db.Alerts.Include(a => a.Topics).Include(a => a.Destinations)
+        var alerts = await db.Alerts.Include(a => a.Topics).Include(a => a.Destinations).AsSingleQuery()
             .Where(a => a.Enabled && a.DeletedAtUtc == null).ToListAsync(ct);
         var existing = (await db.Deliveries
                 .Where(d => d.ArticleKey != null && candidateKeys.Contains(d.ArticleKey))

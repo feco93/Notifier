@@ -24,7 +24,7 @@ public sealed class DataModelTests : IDisposable
     {
         var article = new Article { Key = "c123", Title = "T", Url = "https://www.bbc.co.uk/news/articles/c123",
             FirstSeenAtUtc = Now, LastSeenAtUtc = Now, PublishedAtUtc = Now };
-        var alert = new Alert { OwnerUsername = "u", Name = "A", Tier = Tier.All, CreatedAtUtc = Now,
+        var alert = new Alert { OwnerUsername = "u", Name = "A", Tier = Tier.All, CreatedAtUtc = Now, ActiveSinceUtc = Now,
             Topics = [new AlertTopic { Topic = Topic.World }],
             Destinations = [new Destination { ChannelKey = "email", ConfigJson = "{}" }] };
         db.AddRange(article, alert);

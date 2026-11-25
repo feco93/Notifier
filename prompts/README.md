@@ -61,3 +61,7 @@ Full session transcripts are exported to `prompts/transcripts/` at milestones.
 | 049 | [049-start-slice5.md](049-start-slice5.md) | Slice 5: poller, batched dispatch, retention; 18/18 mutants; live cycle |
 | 050 | [050-explain-cleanup-gap.md](050-explain-cleanup-gap.md) | Explain the retention-invariant gap; residual edge case disclosed |
 | 051 | [051-commit-slice5.md](051-commit-slice5.md) | Commit slice 5 |
+| 052 | [052-add-residual-risk.md](052-add-residual-risk.md) | Residual future-date re-send risk added to risk table |
+| 053 | [053-start-slice6.md](053-start-slice6.md) | Slice 6: alert pages; no-backfill gap fixed; browser check; 17/17 mutants |
+| 054 | [054-ef-split-query-warning.md](054-ef-split-query-warning.md) | EF warning 20504: throw-on-warning guard + explicit AsSingleQuery |
+| 055 | [055-commit-slice6.md](055-commit-slice6.md) | Commit slice 6 + EF warning fix |

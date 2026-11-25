@@ -1,0 +1,86 @@
+@page
+@using Notifier.Core.Channels
+@using Notifier.Core.Domain
+@using Notifier.Web.Alerts
+@model Notifier.Web.Pages.Alerts.CreateModel
+@{
+    ViewData["Title"] = "Create alert";
+    string InputType(FieldKind kind, bool secret) => secret ? "password" : kind switch
+    {
+        FieldKind.Email => "email",
+        FieldKind.Url => "url",
+        _ => "text",
+    };
+}
+<h1>Create alert</h1>
+
+<form method="post">
+    <label for="name">Name</label>
+    <input id="name" name="Input.Name" type="text" maxlength="@AlertService.MaxNameLength" value="@Model.Input.Name" />
+    @if (Model.ErrorFor("Name") is { } nameError) { <p class="error">@nameError</p> }
+
+    <fieldset>
+        <legend>Importance</legend>
+        @foreach (var tier in Enum.GetValues<Tier>())
+        {
+            <label class="choice">
+                <input type="radio" name="Input.Tier" value="@tier" checked="@(Model.Input.Tier == tier)" />
+                @AlertText.Tier(tier, Model.HeadlineN)
+            </label>
+        }
+        @if (Model.ErrorFor("Tier") is { } tierError) { <p class="error">@tierError</p> }
+    </fieldset>
+
+    <fieldset id="topics">
+        <legend>Topics <span class="muted">(only for "All new articles")</span></legend>
+        @foreach (var topic in Enum.GetValues<Topic>())
+        {
+            <label class="choice">
+                <input type="checkbox" name="Input.Topics" value="@topic" checked="@Model.Input.Topics.Contains(topic)" />
+                @TopicNames.Display(topic)
+            </label>
+        }
+        @if (Model.ErrorFor("Topics") is { } topicsError) { <p class="error">@topicsError</p> }
+    </fieldset>
+
+    <label for="keyword">Keyword <span class="muted">(optional, whole word or phrase)</span></label>
+    <input id="keyword" name="Input.Keyword" type="text" maxlength="@AlertService.MaxKeywordLength" value="@Model.Input.Keyword" />
+    @if (Model.ErrorFor("Keyword") is { } keywordError) { <p class="error">@keywordError</p> }
+
+    <fieldset>
+        <legend>Send to</legend>
+        @if (Model.ErrorFor("Destinations") is { } destinationsError) { <p class="error">@destinationsError</p> }
+        @foreach (var channel in Model.Channels)
+        {
+            <div class="destination">
+                <label class="choice">
+                    <input type="checkbox" name="Input.Destinations[@channel.Key].Use" value="true" checked="@Model.Uses(channel)" />
+                    @channel.DisplayName
+                </label>
+                @foreach (var field in channel.ConfigFields)
+                {
+                    var id = $"{channel.Key}-{field.Name}";
+                    <label for="@id">@field.Label</label>
+                    <input id="@id" name="Input.Destinations[@channel.Key].Fields[@field.Name]" type="@InputType(field.Kind, field.IsSecret)"
+                           autocomplete="off" value="@Model.FieldValue(channel, field)" />
+                }
+                @if (Model.ErrorFor($"Destinations[{channel.Key}]") is { } channelError) { <p class="error">@channelError</p> }
+            </div>
+        }
+    </fieldset>
+
+    <p><button type="submit">Create alert</button> <a href="/">Cancel</a></p>
+</form>
+
+<script>
+    // Topics only apply to the "All" tier; the server ignores them otherwise.
+    (function () {
+        const topics = document.getElementById('topics');
+        const sync = () => {
+            const all = document.querySelector('input[name="Input.Tier"][value="All"]').checked;
+            topics.querySelectorAll('input').forEach(i => i.disabled = !all);
+        };
+        document.querySelectorAll('input[name="Input.Tier"]').forEach(r => r.addEventListener('change', sync));
+        sync();
+    })();
+</script>

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Notifier.Sources.Bbc;
+using Notifier.Web.Alerts;
 using Notifier.Web.Auth;
 using Notifier.Web.Channels;
 using Notifier.Web.Data;
@@ -24,6 +25,7 @@ builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddBbcNewsSource(builder.Configuration);
 builder.Services.AddNotifierChannels(builder.Configuration);
 builder.Services.AddScoped<TestSendService>();
+builder.Services.AddScoped<AlertService>();
 builder.Services.AddNotifierPolling(builder.Configuration);
 
 var dbPath = Path.Combine(builder.Environment.ContentRootPath,

@@ -34,6 +34,8 @@ public sealed class Alert
     public string? Keyword { get; set; }
     public bool Enabled { get; set; } = true;
     public DateTime CreatedAtUtc { get; set; }
+    /// <summary>Creation or last re-enable; only articles first seen after this can match.</summary>
+    public DateTime ActiveSinceUtc { get; set; }
     public DateTime? DeletedAtUtc { get; set; }
     public List<AlertTopic> Topics { get; set; } = [];
     public List<Destination> Destinations { get; set; } = [];

@@ -46,8 +46,8 @@ public static class Matcher
         if (!alert.Enabled || alert.DeletedAtUtc is not null)
             return MatchResult.Reject(Rejection.AlertInactive);
 
-        // No backfill: only articles discovered after the alert existed.
-        if (article.FirstSeenAtUtc <= alert.CreatedAtUtc)
+        // No backfill: only articles discovered after the alert became active (created or re-enabled).
+        if (article.FirstSeenAtUtc <= alert.ActiveSinceUtc)
             return MatchResult.Reject(Rejection.SeenBeforeAlert);
 
         if (article.PublishedAtUtc is not { } published)

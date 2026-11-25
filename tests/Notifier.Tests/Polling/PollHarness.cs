@@ -73,6 +73,7 @@ public sealed class PollHarness : IDisposable
         {
             OwnerUsername = "u", Name = $"{tier} alert", Tier = tier, Keyword = keyword,
             CreatedAtUtc = Clock.GetUtcNow().UtcDateTime,
+            ActiveSinceUtc = Clock.GetUtcNow().UtcDateTime,
             Topics = [.. topics.Select(t => new AlertTopic { Topic = t })],
             Destinations = [.. Enumerable.Range(1, destinations).Select(i => new Destination
                 { ChannelKey = RecordingChannel.ChannelKey, ConfigJson = $$"""{"to":"d{{i}}"}""" })],

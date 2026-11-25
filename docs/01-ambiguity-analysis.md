@@ -332,6 +332,7 @@ Ordered by how much the answer would change the design:
 | Feed structure changes (e.g. GUID suffixes, malformed dates) | Low | Parser tests on **synthetic** BBC-shaped fixtures (real captures are git-ignored, D-013); lenient date parser (V-021). *Corrected in phase 3: previously said "saved samples", contradicting D-013 (V-025)* |
 | ~~Topic × tier intersection misses stories BBC doesn't cross-list~~ | — | Resolved: tier decides, topics only for All (Q1, D-022) |
 | At-least-once delivery → rare duplicate after a crash | Low | Unique index + Pending-row resume (03-design §6) |
+| Future-dated article (bad `pubDate`) that is sent, leaves the feed, is fully purged (delivery > 30 d, article unseen > 8 d) and later **reappears** gets a new `FirstSeen` → one more send | Very low (needs a broken date *and* a return after > 1 month) | Accepted. Age = `now − min(published, firstSeen)` closes the common path (V-061). This residual path is documented, not handled (prompt 052) |
 | Breaking stories in the **All** tier of busy topics → many messages | Low | **Per-poll batching** (D-023): one message per alert per cycle, max 20 items; plus tier + keyword choice |
 
 *Removed in phase 3 (V-025), stale since the switch to BBC:*

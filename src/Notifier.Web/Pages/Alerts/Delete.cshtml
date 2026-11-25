@@ -1,0 +1,11 @@
+@page "{id:int}"
+@model Notifier.Web.Pages.Alerts.DeleteModel
+@{
+    ViewData["Title"] = "Delete alert";
+}
+<h1>Delete alert</h1>
+<p>Delete <strong>@Model.Alert!.Name</strong>? It will stop sending notifications. This can't be undone.</p>
+<form method="post">
+    <button type="submit">Delete</button>
+    <a href="/">Cancel</a>
+</form>

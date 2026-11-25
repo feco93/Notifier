@@ -1,6 +1,63 @@
 @page
+@using Notifier.Core.Domain
+@using Notifier.Web.Alerts
+@model Notifier.Web.Pages.IndexModel
 @{
     ViewData["Title"] = "My alerts";
 }
 <h1>My alerts</h1>
-<p class="muted">Alert management is not implemented yet.</p>
+
+@if (Model.StatusMessage is not null) { <p class="status">@Model.StatusMessage</p> }
+@if (Model.ErrorMessage is not null) { <p class="error">@Model.ErrorMessage</p> }
+
+<p><a href="/Alerts/Create">Create alert</a></p>
+
+@if (Model.Alerts.Count == 0)
+{
+    <p class="muted">You have no alerts yet.</p>
+}
+else
+{
+    <table>
+        <thead>
+            <tr><th>Alert</th><th>Importance</th><th>Destinations</th><th>Status</th><th></th></tr>
+        </thead>
+        <tbody>
+        @foreach (var alert in Model.Alerts)
+        {
+            <tr>
+                <td>
+                    <strong>@alert.Name</strong>
+                    @if (alert.Tier == Tier.All)
+                    {
+                        <div class="muted">Topics: @string.Join(", ", alert.Topics.Select(t => TopicNames.Display(t.Topic)))</div>
+                    }
+                    @if (alert.Keyword is not null)
+                    {
+                        <div class="muted">Keyword: @alert.Keyword</div>
+                    }
+                </td>
+                <td>@AlertText.Tier(alert.Tier, Model.HeadlineN)</td>
+                <td>
+                    @foreach (var destination in alert.Destinations)
+                    {
+                        <div>
+                            @Model.Describe(destination)
+                            <form method="post" asp-page-handler="Test" asp-route-alertId="@alert.Id" asp-route-destinationId="@destination.Id" class="inline">
+                                <button type="submit">Test</button>
+                            </form>
+                        </div>
+                    }
+                </td>
+                <td>@(alert.Enabled ? "Enabled" : "Disabled")</td>
+                <td>
+                    <form method="post" asp-page-handler="Toggle" asp-route-id="@alert.Id" class="inline">
+                        <button type="submit">@(alert.Enabled ? "Disable" : "Enable")</button>
+                    </form>
+                    <a href="/Alerts/Delete/@alert.Id">Delete</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

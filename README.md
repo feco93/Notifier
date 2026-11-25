@@ -3,9 +3,10 @@
 Home assignment: take a deliberately vague product brief to a working
 implementation using AI agents, with the process documented.
 
-**Status:** Phase 4 (build), slices 1–5 of 7 done: solution, data model,
+**Status:** Phase 4 (build), slices 1–6 of 7 done: solution, data model,
 login; BBC source; matcher; email and Slack channels with test send; poller,
-batched dispatch and retention.
+batched dispatch and retention; alert pages (create, list, enable/disable,
+delete, test send).
 Source: BBC News RSS, personal prototype (see
 [notes/bbc-terms-review.md](notes/bbc-terms-review.md)).
 
@@ -53,6 +54,7 @@ trade-off, design §3).
 
 **Known prototype gaps** (deliberate, not production-ready):
 - no login rate limiting or lockout
+- no limit on the number of alerts or on test sends per user
 - no HTTPS redirect / HSTS
 - no custom error page outside Development
 

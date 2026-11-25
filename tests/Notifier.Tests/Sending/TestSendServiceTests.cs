@@ -58,7 +58,7 @@ public sealed class TestSendServiceTests : IDisposable
 
     private (TestSendService service, Alert alert) Setup(string channelKey = "rec", string configJson = """{"to":"x"}""")
     {
-        var alert = new Alert { OwnerUsername = "u", Name = "My alert", Tier = Tier.Headline, CreatedAtUtc = Now,
+        var alert = new Alert { OwnerUsername = "u", Name = "My alert", Tier = Tier.Headline, CreatedAtUtc = Now, ActiveSinceUtc = Now,
             Destinations = [new Destination { ChannelKey = channelKey, ConfigJson = configJson }] };
         _db.Alerts.Add(alert);
         _db.SaveChanges();
