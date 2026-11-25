@@ -141,7 +141,7 @@ erDiagram
 | **Alert** | `Id`, `OwnerUsername`, `Name`, `Tier`, `Keyword?`, `Enabled`, `CreatedAtUtc`, `DeletedAtUtc?` | Every query filtered by owner [US-03]. **Soft delete:** deleting sets `DeletedAtUtc`. The alert disappears from the user's list and never matches, but its `Delivery` rows stay for the admin log (US-03; Q3 gap found in V-029) |
 | **AlertTopic** | `AlertId`, `Topic` | ≥ 1 when Tier = All; none for Headline/FrontPage [US-02, Q1] |
 | **Destination** | `Id`, `AlertId`, `ChannelKey`, `ConfigJson` | ≤ 1 per channel per alert in v1 (ADR 0003). Config holds secrets → never logged, masked in UI [NFR-06] |
-| **Delivery** | `Id`, `ArticleKey?`, `AlertId`, `DestinationId`, `BatchId?`, `Kind` (Real/Test), `Status` (Pending/Sent/Failed), `Attempts`, `LastError?`, `CreatedAtUtc`, `CompletedAtUtc?` | **Unique index (ArticleKey, AlertId, DestinationId)** = once-only guarantee [NFR-04]. Test sends have `ArticleKey` null; SQLite treats NULLs as distinct, so the index allows repeats |
+| **Delivery** | `Id`, `ArticleKey?`, `AlertId`, `DestinationId`, `BatchId?`, `Kind` (Real/Test), `Status` (Pending/Sent/Failed), `Reason?`, `Attempts`, `LastError?`, `CreatedAtUtc`, `CompletedAtUtc?` | **Unique index (ArticleKey, AlertId, DestinationId)** = once-only guarantee [NFR-04]. Test sends have `ArticleKey` null; SQLite treats NULLs as distinct, so the index allows repeats |
 | **FeedStatus** | `Topic` (PK), `LastPollAtUtc?`, `LastSuccessAtUtc?`, `LastError?`, `ItemsLastFetch`, `NewLastFetch`, `NextPollAtUtc?` | Drives admin status page [AS-02] (the baseline rule it once fed was rejected, Q5) |
 
 **Enums:**
@@ -173,7 +173,7 @@ An article matches an alert when **all** of these hold:
 |---|---|---|
 | 1 | `alert.Enabled` and not deleted (`DeletedAtUtc` null) | US-03 |
 | 2 | `article.FirstSeenAtUtc > alert.CreatedAtUtc` | A-04′ (no backfill) |
-| 3 | `article.PublishedAtUtc` is known **and** `now − PublishedAtUtc ≤ FreshnessWindow` (24h) | A-04′, spike: unknown date ⇒ not eligible |
+| 3 | `article.PublishedAtUtc` is known **and** its age ≤ `FreshnessWindow` (24h), where age = `now − min(PublishedAtUtc, FirstSeenAtUtc)`. *The `min` was added in slice 5: without it a future-dated article stays fresh forever and breaks the retention invariant (§6a, V-061).* | A-04′, spike: unknown date ⇒ not eligible |
 | 4 | **Tier = All:** the article appears in at least one of the alert's topics | A-09, Q1 |
 | 5 | **Tier = FrontPage:** `OnTopStories` (any section). **Tier = Headline:** `TopStoriesRank ≤ HeadlineN` (5), where the rank exists only for the **lead section** (D-025). Topics are **not used** for these tiers | A-03′, Q1, D-025 |
 | 6 | **Keyword** (optional): appears in `Title` or `Summary` as a **whole word or phrase**: case-insensitive, word boundaries on both ends, any whitespace between phrase words. *Was substring; changed after measuring noise on real feeds (D-026).* | A-09, D-026 |
@@ -282,6 +282,9 @@ sequenceDiagram
    - The worker waits on *either* the 15-min timer or that channel.
    - The 60 s minimum gap is enforced with `TimeProvider`, and the page shows
      "next allowed at …".
+   - The worker also waits until 60 s after the **previous cycle started**.
+     Without that, a request arriving mid-cycle would trigger a second set of
+     BBC fetches seconds after the first (V-063).
 6. **Polite polling** [D-013]:
    - interval ≥ 15 min (config validation rejects less for live BBC)
    - honest `User-Agent` naming a personal, non-commercial prototype
@@ -310,7 +313,8 @@ sequenceDiagram
    after 2 s. Then mark **all rows of the batch** Sent or Failed together,
    with the error after masking secrets.
 5. **Crash safety:** rows still Pending (process died mid-send) are
-   re-grouped and sent on the next cycle. That makes delivery
+   re-grouped and sent on the next cycle, using the **`Reason` stored on the
+   row** (the article may no longer match by then). That makes delivery
    **at-least-once with a tiny duplicate window**, chosen over at-most-once,
    which would silently lose alerts. **Owner-accepted (Q4).**
 6. *Not a digest:* grouping happens **within one poll cycle only**. There is

@@ -241,6 +241,16 @@ public sealed class MatcherTests
         Assert.True(Eval(NewAlert(Tier.Headline), article).IsMatch);
     }
 
+    [Fact]
+    public void Future_dated_article_ages_from_when_it_was_first_seen()
+    {
+        var article = NewArticle(rank: 1);
+        article.PublishedAtUtc = Now.AddYears(70);
+        article.FirstSeenAtUtc = AlertCreated.AddMinutes(1);
+        var later = Now + Settings.FreshnessWindow;
+        Assert.Equal(Rejection.NotFresh, Matcher.Evaluate(NewAlert(Tier.Headline), article, later, Settings).Rejection);
+    }
+
     // ---- Contract ----------------------------------------------------------
 
     [Theory]

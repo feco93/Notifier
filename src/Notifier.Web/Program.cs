@@ -4,6 +4,7 @@ using Notifier.Sources.Bbc;
 using Notifier.Web.Auth;
 using Notifier.Web.Channels;
 using Notifier.Web.Data;
+using Notifier.Web.Polling;
 using Notifier.Web.Sending;
 
 // `hash-password`: reads a password from stdin and prints its hash for appsettings.
@@ -23,6 +24,7 @@ builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddBbcNewsSource(builder.Configuration);
 builder.Services.AddNotifierChannels(builder.Configuration);
 builder.Services.AddScoped<TestSendService>();
+builder.Services.AddNotifierPolling(builder.Configuration);
 
 var dbPath = Path.Combine(builder.Environment.ContentRootPath,
     builder.Configuration["Notifier:DatabasePath"] ?? "notifier.db");

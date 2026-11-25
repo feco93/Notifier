@@ -64,6 +64,8 @@ public sealed class Delivery
     public Guid? BatchId { get; set; }
     public DeliveryKind Kind { get; set; }
     public DeliveryStatus Status { get; set; }
+    /// <summary>Why the article matched; kept so a row resumed after a crash is sent with it.</summary>
+    public string? Reason { get; set; }
     public int Attempts { get; set; }
     public string? LastError { get; set; }
     public DateTime CreatedAtUtc { get; set; }

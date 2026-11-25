@@ -52,7 +52,9 @@ public static class Matcher
 
         if (article.PublishedAtUtc is not { } published)
             return MatchResult.Reject(Rejection.UnknownPublishDate);
-        if (nowUtc - published > settings.FreshnessWindow)
+        // A future date (bad data) would otherwise keep the article fresh forever.
+        var age = nowUtc - (published < article.FirstSeenAtUtc ? published : article.FirstSeenAtUtc);
+        if (age > settings.FreshnessWindow)
             return MatchResult.Reject(Rejection.NotFresh);
 
         string reason;

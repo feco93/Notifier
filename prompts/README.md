@@ -58,3 +58,6 @@ Full session transcripts are exported to `prompts/transcripts/` at milestones.
 | 046 | [046-start-slice4.md](046-start-slice4.md) | Slice 4: email + Slack channels, test send, run.ps1; E2E email; 18/18 mutants |
 | 047 | [047-always-review.md](047-always-review.md) | Standing rule: self-review every slice; slice 4 review fixes |
 | 048 | [048-commit-slice4.md](048-commit-slice4.md) | Commit slice 4 |
+| 049 | [049-start-slice5.md](049-start-slice5.md) | Slice 5: poller, batched dispatch, retention; 18/18 mutants; live cycle |
+| 050 | [050-explain-cleanup-gap.md](050-explain-cleanup-gap.md) | Explain the retention-invariant gap; residual edge case disclosed |
+| 051 | [051-commit-slice5.md](051-commit-slice5.md) | Commit slice 5 |

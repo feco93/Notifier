@@ -22,6 +22,8 @@ public sealed class NotifierFactory : WebApplicationFactory<Program>
         builder.UseSetting("Notifier:DatabasePath", DatabasePath);
         builder.ConfigureAppConfiguration(c => c.AddInMemoryCollection(new Dictionary<string, string?>
         {
+            // Web tests must never reach the real BBC feeds.
+            ["Notifier:Polling:Enabled"] = "false",
             ["Notifier:Users:Users:0:Username"] = UserName,
             ["Notifier:Users:Users:0:Role"] = Roles.User,
             ["Notifier:Users:Users:0:PasswordHash"] = ConfigUserStore.Hash(UserPassword),

@@ -3,8 +3,9 @@
 Home assignment: take a deliberately vague product brief to a working
 implementation using AI agents, with the process documented.
 
-**Status:** Phase 4 (build), slices 1–4 of 7 done: solution, data model,
-login; BBC source; matcher; email and Slack channels with test send.
+**Status:** Phase 4 (build), slices 1–5 of 7 done: solution, data model,
+login; BBC source; matcher; email and Slack channels with test send; poller,
+batched dispatch and retention.
 Source: BBC News RSS, personal prototype (see
 [notes/bbc-terms-review.md](notes/bbc-terms-review.md)).
 
